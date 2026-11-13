@@ -464,13 +464,13 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 3 — Activity Management
 
-- [ ] 3.1 Create Activity Form UI
-- [ ] 3.2 Implement activity validation
-- [ ] 3.3 Implement Create Activity
-- [ ] 3.4 Implement Activity List
-- [ ] 3.5 Implement Edit Activity
-- [ ] 3.6 Implement Delete Activity
-- [ ] 3.7 Implement Category Selection
+- [x] 3.1 Create Activity Form UI
+- [x] 3.2 Implement activity validation
+- [x] 3.3 Implement Create Activity
+- [x] 3.4 Implement Activity List
+- [x] 3.5 Implement Edit Activity
+- [x] 3.6 Implement Delete Activity
+- [x] 3.7 Implement Category Selection
 
 ### Phase 4 — Period Engine
 
@@ -571,6 +571,56 @@ If a feature has unresolved critical issues, do not mark it complete.
 # 9. FEATURE COMPLETION RECORD
 
 After completing each feature, add a record here.
+
+## Feature Completion Record
+
+### Feature: Phase 3 — Activity Management
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/usecase/habit/CreateHabitUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/habit/UpdateHabitUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/habit/DeleteHabitUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/habit/GetActiveHabitsUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/habit/GetHabitByIdUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/validation/ActivityValidator.kt
+  - app/src/main/java/com/myhabbit/app/core/result/AppResult.kt
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityFormScreen.kt
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityListScreen.kt
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityViewModel.kt
+  - app/src/test/java/com/myhabbit/app/domain/usecase/habit/HabitUseCaseTest.kt
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/Screen.kt (rute activity_list, activity_form, activity_edit)
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/AppNavigation.kt
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardScreen.kt
+  - gradle/libs.versions.toml (lifecycle-runtime-compose, mockito-kotlin)
+  - app/build.gradle.kts
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (16/16: 8 DAO + 8 use case)
+
+- Acceptance Criteria:
+  - [x] User dapat membuat activity
+  - [x] Title wajib (1-100 karakter)
+  - [x] Category wajib dipilih (Daily/Weekly/Monthly)
+  - [x] Description opsional (max 500 karakter)
+  - [x] Activity muncul di list
+  - [x] Activity dapat diedit (ID tidak berubah, createdAt dipertahankan)
+  - [x] Activity dapat dihapus (soft delete dengan dialog konfirmasi, default Cancel)
+  - [x] Activity ID unik (UUID-based: habit_...)
+
+- Known Issues:
+  - Verifikasi runtime di device HP belum bisa dilakukan (USB tidak terdeteksi saat sesi ini)
+
+- Notes:
+  - Delete memakai soft delete agar history tetap tersedia (PRD.md §16)
+  - Error handling memakai AppResult sealed interface (ARCHITECTURE.md §19)
 
 ## Feature Completion Record
 
