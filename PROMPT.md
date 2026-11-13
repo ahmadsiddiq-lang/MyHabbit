@@ -529,11 +529,11 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 10 — Google Authentication
 
-- [ ] 10.1 Configure Google Authentication
-- [ ] 10.2 Implement Google Sign-In
-- [ ] 10.3 Implement User Profile
-- [ ] 10.4 Implement Sign-Out
-- [ ] 10.5 Handle Authentication Errors
+- [x] 10.1 Configure Google Authentication
+- [x] 10.2 Implement Google Sign-In
+- [x] 10.3 Implement User Profile
+- [x] 10.4 Implement Sign-Out
+- [x] 10.5 Handle Authentication Errors
 
 ### Phase 11 — JSON Backup
 
@@ -573,6 +573,51 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 10 — Google Authentication
+
+- Status: COMPLETED (kode + test; verifikasi end-to-end menunggu Web Client ID user)
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/model/AuthResult.kt
+  - app/src/main/java/com/myhabbit/app/domain/repository/AuthRepository.kt
+  - app/src/main/java/com/myhabbit/app/data/auth/AuthConfig.kt (placeholder WEB_CLIENT_ID)
+  - app/src/main/java/com/myhabbit/app/data/auth/GoogleAuthManager.kt
+  - app/src/main/java/com/myhabbit/app/data/repository/AuthRepositoryImpl.kt
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileViewModel.kt
+  - app/src/test/java/com/myhabbit/app/data/repository/AuthRepositoryImplTest.kt
+  - app/src/test/java/com/myhabbit/app/presentation/profile/ProfileViewModelTest.kt
+
+- Files Modified:
+  - gradle/libs.versions.toml (credentials 1.3.0, googleid 1.1.1)
+  - app/build.gradle.kts (3 dependency auth)
+  - app/src/main/java/com/myhabbit/app/di/DatabaseModule.kt (bindAuthRepository)
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileScreen.kt (full rebuild)
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (72/72 total: 4 AuthRepositoryImpl + 4 ProfileViewModel baru)
+
+- Acceptance Criteria:
+  - [x] Google Sign-In via Credential Manager (mekanisme resmi, PRD §31)
+  - [x] Tanpa password & tanpa token di storage — hanya profil user di Room
+  - [x] Auth logic di GoogleAuthManager/AuthRepository, BUKAN di Compose (§14)
+  - [x] Sign-out menghapus user lokal + clear credential state
+  - [x] Error handling: GetCredentialException (batal/gagal) → pesan user-friendly
+  - [x] App tetap berfungsi tanpa login (Profile menampilkan "Belum login")
+  - [x] Nonce di-generate untuk keamanan ID token
+
+- Known Issues:
+  - WEB_CLIENT_ID masih placeholder — harus diisi user dari Google Cloud Console
+  - Verifikasi end-to-end (sheet Google muncul & login sukses) menunggu client ID + SHA-1 didaftarkan
+  - Photo profil ditampilkan sebagai avatar inisial (tanpa Coil; hindari dependency tambahan)
+
+- Notes:
+  - Email diambil dari payload JWT ID token (GoogleIdTokenCredential tidak expose email)
+  - Profil dipersist ke tabel `users` (infrastruktur sudah ada sejak Phase 2)
 
 ### Feature: Phase 9 — Charts
 
