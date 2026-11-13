@@ -492,13 +492,13 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 6 — Dashboard
 
-- [ ] 6.1 Create Dashboard UI
-- [ ] 6.2 Implement Daily Activities
-- [ ] 6.3 Implement Weekly Activities
-- [ ] 6.4 Implement Monthly Activities
-- [ ] 6.5 Implement Category Navigation
-- [ ] 6.6 Implement Current Period Progress
-- [ ] 6.7 Implement Empty State
+- [x] 6.1 Create Dashboard UI
+- [x] 6.2 Implement Daily Activities
+- [x] 6.3 Implement Weekly Activities
+- [x] 6.4 Implement Monthly Activities
+- [x] 6.5 Implement Category Navigation
+- [x] 6.6 Implement Current Period Progress
+- [x] 6.7 Implement Empty State
 
 ### Phase 7 — History
 
@@ -573,6 +573,43 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 6 — Dashboard
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardViewModel.kt
+  - app/src/main/java/com/myhabbit/app/presentation/components/StatusSelector.kt
+  - app/src/main/java/com/myhabbit/app/presentation/components/ProgressCard.kt
+  - app/src/test/java/com/myhabbit/app/presentation/dashboard/DashboardViewModelTest.kt
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardScreen.kt
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (44/44 total)
+
+- Acceptance Criteria:
+  - [x] Dashboard menampilkan tanggal hari ini (format Indonesia)
+  - [x] Activity dikelompokkan DAILY / WEEKLY / MONTHLY
+  - [x] Status ○ / ✓ / ✕ dengan tombol yang bisa diklik
+  - [x] Update status tersimpan & UI refresh (refresh trigger)
+  - [x] Progress per kategori (completed/total, %, bar)
+  - [x] Empty state dengan aksi tambah
+  - [x] Aksesibilitas: contentDescription pada tombol status, status dibedakan simbol + background
+  - [x] Error ditampilkan via Snackbar
+
+- Known Issues:
+  - Status yang diseleksi ditandai background secondaryContainer (bukan hanya warna ikon)
+
+- Notes:
+  - Room flow hanya memantau tabel habits, sehingga update record memerlukan refresh trigger manual
+  - Verifikasi runtime di device HP dapat dilakukan saat USB tersedia
 
 ### Feature: Phase 5 — Status Management
 
