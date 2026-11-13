@@ -537,14 +537,14 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 11 — JSON Backup
 
-- [ ] 11.1 Define Backup JSON Schema
-- [ ] 11.2 Implement Backup Models
-- [ ] 11.3 Implement JSON Serializer
-- [ ] 11.4 Implement JSON Validator
-- [ ] 11.5 Implement Export
-- [ ] 11.6 Implement Import
-- [ ] 11.7 Implement Schema Versioning
-- [ ] 11.8 Test Backup and Restore
+- [x] 11.1 Define Backup JSON Schema
+- [x] 11.2 Implement Backup Models
+- [x] 11.3 Implement JSON Serializer
+- [x] 11.4 Implement JSON Validator
+- [x] 11.5 Implement Export
+- [x] 11.6 Implement Import
+- [x] 11.7 Implement Schema Versioning
+- [x] 11.8 Test Backup and Restore
 
 ### Phase 12 — Google Drive
 
@@ -573,6 +573,58 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 11 — JSON Backup
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/data/backup/BackupModels.kt
+  - app/src/main/java/com/myhabbit/app/data/backup/BackupSerializer.kt
+  - app/src/main/java/com/myhabbit/app/data/backup/BackupValidator.kt
+  - app/src/main/java/com/myhabbit/app/data/backup/BackupExporter.kt
+  - app/src/main/java/com/myhabbit/app/data/backup/BackupImporter.kt
+  - app/src/main/java/com/myhabbit/app/domain/repository/BackupRepository.kt
+  - app/src/main/java/com/myhabbit/app/data/repository/BackupRepositoryImpl.kt
+  - app/src/test/java/com/myhabbit/app/data/backup/BackupSerializerTest.kt
+  - app/src/test/java/com/myhabbit/app/data/backup/BackupValidatorTest.kt
+  - app/src/test/java/com/myhabbit/app/data/backup/BackupExporterImporterTest.kt
+
+- Files Modified:
+  - gradle/libs.versions.toml (kotlinx-serialization-json 1.6.3 + plugin serialization)
+  - app/build.gradle.kts
+  - app/src/main/java/com/myhabbit/app/di/DatabaseModule.kt (bindBackupRepository)
+  - app/src/main/java/com/myhabbit/app/data/local/dao/HabitDao.kt (deleteAllHabits)
+  - app/src/main/java/com/myhabbit/app/data/local/dao/HabitRecordDao.kt (deleteAllRecords)
+  - app/src/main/java/com/myhabbit/app/data/local/dao/UserDao.kt (getCurrentUser)
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileViewModel.kt (exportBackup/importBackup)
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileScreen.kt (BackupCard)
+  - app/src/test/java/com/myhabbit/app/data/repository/AuthRepositoryImplTest.kt (FakeUserDao + getCurrentUser)
+  - app/src/test/java/com/myhabbit/app/presentation/profile/ProfileViewModelTest.kt (backupRepository + 2 test)
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (96/96 total: 24 test backup baru)
+
+- Acceptance Criteria:
+  - [x] Schema v1: schemaVersion, app, exportedAt, user, habits, records, settings
+  - [x] Serializer round-trip aman (kotlinx-serialization, ARCHITECTURE §16)
+  - [x] Validator: reject schemaVersion masa depan, duplikat ID, referensi habit rusak, enum salah, field kosong
+  - [x] Export: habit aktif + soft-deleted + semua record + profil + settings, tanpa token
+  - [x] Import: validasi dulu, replace dalam SATU Room transaction (gagal tidak merusak data)
+  - [x] Enum lowercase JSON dinormalisasi ke internal uppercase
+  - [x] Backup file app-specific storage (tanpa permission)
+
+- Known Issues:
+  - Restore dari UI belum support pilih file eksternal (SAF) — baca file dari storage aplikasi; SAF opsional untuk polish
+  - Konfirmasi "replace data" di UI masih inline message, belum dialog peringatan eksplisit (PRD §34)
+
+- Notes:
+  - Timestamp JSON memakai epoch millis Long (deviasi dari contoh ISO PRD — internal model juga epoch)
+  - Drive upload/download adalah Phase 12
 
 ### Feature: Phase 10 — Google Authentication
 

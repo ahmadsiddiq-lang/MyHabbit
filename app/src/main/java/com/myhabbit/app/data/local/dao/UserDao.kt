@@ -14,6 +14,9 @@ interface UserDao {
     suspend fun getUserById(id: String): UserEntity?
 
     @Query("SELECT * FROM users LIMIT 1")
+    suspend fun getCurrentUser(): UserEntity?
+
+    @Query("SELECT * FROM users LIMIT 1")
     fun observeCurrentUser(): Flow<UserEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

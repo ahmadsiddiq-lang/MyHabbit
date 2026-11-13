@@ -75,6 +75,13 @@ fun ProfileScreen(
 
         AboutCard()
 
+        BackupCard(
+            message = state.backupMessage,
+            onExport = { viewModel.exportBackup() },
+            onImport = { viewModel.importBackup() },
+            onDismissMessage = { viewModel.clearBackupMessage() }
+        )
+
         Text(
             text = "MyHabbit v1.0.0",
             style = MaterialTheme.typography.labelSmall,
@@ -158,6 +165,53 @@ private fun AccountCard(
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {
                     Text("Sign out")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BackupCard(
+    message: String?,
+    onExport: () -> Unit,
+    onImport: () -> Unit,
+    onDismissMessage: () -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Backup",
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = "Simpan seluruh data ke file JSON, atau restore dari file backup. Restore akan mengganti data saat ini.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(onClick = onExport) {
+                    Text("Export backup")
+                }
+                OutlinedButton(onClick = onImport) {
+                    Text("Import backup")
+                }
+            }
+            message?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                TextButton(onClick = onDismissMessage) {
+                    Text("Tutup")
                 }
             }
         }

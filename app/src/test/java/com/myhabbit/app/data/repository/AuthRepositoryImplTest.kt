@@ -42,6 +42,8 @@ class AuthRepositoryImplTest {
 
         override suspend fun getUserById(id: String): UserEntity? = users.value
 
+        override suspend fun getCurrentUser(): UserEntity? = users.value
+
         override fun observeCurrentUser(): Flow<UserEntity?> = users
 
         override suspend fun insertUser(user: UserEntity) {
