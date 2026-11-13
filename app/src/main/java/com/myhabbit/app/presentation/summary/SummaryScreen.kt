@@ -20,11 +20,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.myhabbit.app.domain.model.HabitStatus
 import com.myhabbit.app.domain.model.Summary
+import com.myhabbit.app.presentation.components.BarChart
+import com.myhabbit.app.presentation.components.BarChartData
+import com.myhabbit.app.presentation.components.DonutChart
+import com.myhabbit.app.presentation.components.DonutSegment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,9 +83,48 @@ fun SummaryScreen(
                 )
             }
 
-            state.summary?.let { summary ->
+            val summary = state.summary
+            if (summary != null) {
                 CompletionRateCard(summary)
                 CountsCard(summary)
+                if (state.chart.bars.isNotEmpty()) {
+                    ChartsCard(
+                        title = "Completion per Activity",
+                        content = {
+                            BarChart(
+                                data = state.chart.bars.map { bar ->
+                                    BarChartData(label = bar.label, percentage = bar.percentage)
+                                }
+                            )
+                        }
+                    )
+                }
+                if (summary.evaluated > 0 || summary.pending > 0) {
+                    ChartsCard(
+                        title = "Status Distribution",
+                        content = {
+                            DonutChart(
+                                segments = listOf(
+                                    DonutSegment(
+                                        status = HabitStatus.COMPLETED,
+                                        count = state.chart.segments.first { it.label == "Completed" }.count,
+                                        color = Color(0xFF2E7D32)
+                                    ),
+                                    DonutSegment(
+                                        status = HabitStatus.FAILED,
+                                        count = state.chart.segments.first { it.label == "Failed" }.count,
+                                        color = MaterialTheme.colorScheme.error
+                                    ),
+                                    DonutSegment(
+                                        status = HabitStatus.PENDING,
+                                        count = state.chart.segments.first { it.label == "Pending" }.count,
+                                        color = Color(0xFF9E9E9E)
+                                    )
+                                )
+                            )
+                        }
+                    )
+                }
             }
         }
     }
@@ -138,5 +183,26 @@ private fun SummaryRow(label: String, value: String) {
             modifier = Modifier.weight(1f)
         )
         Text(text = value)
+    }
+}
+
+@Composable
+private fun ChartsCard(
+    title: String,
+    content: @Composable () -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelLarge
+            )
+            content()
+        }
     }
 }

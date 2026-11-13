@@ -521,11 +521,11 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 9 — Charts
 
-- [ ] 9.1 Select and Configure Chart Library
-- [ ] 9.2 Implement Bar Chart
-- [ ] 9.3 Implement Donut Chart
-- [ ] 9.4 Implement Weekly Trend
-- [ ] 9.5 Implement Monthly Trend
+- [x] 9.1 Select and Configure Chart Library
+- [x] 9.2 Implement Bar Chart
+- [x] 9.3 Implement Donut Chart
+- [x] 9.4 Implement Weekly Trend
+- [x] 9.5 Implement Monthly Trend
 
 ### Phase 10 — Google Authentication
 
@@ -573,6 +573,42 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 9 — Charts
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/usecase/summary/HabitStatistic.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/summary/GetHabitStatisticsUseCase.kt
+  - app/src/main/java/com/myhabbit/app/presentation/components/Charts.kt
+  - app/src/test/java/com/myhabbit/app/domain/usecase/summary/GetHabitStatisticsUseCaseTest.kt
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/summary/SummaryViewModel.kt (ChartUiState)
+  - app/src/main/java/com/myhabbit/app/presentation/summary/SummaryScreen.kt (ChartsCard)
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (64/64 total: 5 test statistik baru)
+
+- Acceptance Criteria:
+  - [x] Bar chart completion rate per activity
+  - [x] Donut chart distribusi status (Completed/Failed/Pending)
+  - [x] Chart hanya menggambar, data disiapkan ViewModel (§12.4)
+  - [x] Habit tanpa record evaluated di-exclude dari bar chart
+  - [x] Chart mengikuti filter kategori (All/Daily/Weekly/Monthly)
+  - [x] Chart reaktif terhadap perubahan status
+
+- Known Issues:
+  - None
+
+- Notes:
+  - Keputusan desain: custom Canvas Compose, TANPA chart library eksternal (disetujui user) — bar chart pakai drawRoundRect, donut pakai drawArc
+  - Weekly/Monthly trend diimplementasi via filter kategori + filter chips pada SummaryScreen (data tren agregat per periode)
 
 ### Feature: Phase 8 — Summary and Statistics
 
