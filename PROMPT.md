@@ -483,12 +483,12 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 5 — Status Management
 
-- [ ] 5.1 Implement Pending Status
-- [ ] 5.2 Implement Completed Status
-- [ ] 5.3 Implement Failed Status
-- [ ] 5.4 Implement Status Update
-- [ ] 5.5 Implement Record Persistence
-- [ ] 5.6 Test Status Changes
+- [x] 5.1 Implement Pending Status
+- [x] 5.2 Implement Completed Status
+- [x] 5.3 Implement Failed Status
+- [x] 5.4 Implement Status Update
+- [x] 5.5 Implement Record Persistence
+- [x] 5.6 Test Status Changes
 
 ### Phase 6 — Dashboard
 
@@ -573,6 +573,42 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 5 — Status Management
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/usecase/record/UpdateHabitStatusUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/record/GetHabitStatusUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/record/GetCurrentPeriodStatusesUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/record/HabitWithStatus.kt
+  - app/src/test/java/com/myhabbit/app/domain/usecase/record/StatusManagementTest.kt
+
+- Files Modified:
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (40/40 total: 8 status management baru + 16 period + 8 DAO + 8 use case)
+
+- Acceptance Criteria:
+  - [x] Habit tanpa record = PENDING (tanpa menulis DB)
+  - [x] User dapat memilih completed
+  - [x] User dapat memilih failed
+  - [x] User dapat kembali ke pending (record diupdate, tidak duplikat)
+  - [x] Status persist setelah restart (tersimpan di Room)
+  - [x] Periode baru otomatis PENDING, record lama tetap utuh
+  - [x] Weekly/monthly pakai periodKey sesuai kategori
+
+- Known Issues:
+  - None
+
+- Notes:
+  - Update status pakai create-or-update dengan unique index habitId+periodKey
+  - GetHabitStatusUseCase hanya membaca, tidak menulis ke DB (ARCHITECTURE.md §8.5)
 
 ### Feature: Phase 4 — Period Engine
 
