@@ -511,13 +511,13 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 8 — Summary and Statistics
 
-- [ ] 8.1 Implement CompletionCalculator
-- [ ] 8.2 Implement Summary Use Case
-- [ ] 8.3 Implement Daily Summary
-- [ ] 8.4 Implement Weekly Summary
-- [ ] 8.5 Implement Monthly Summary
-- [ ] 8.6 Implement Category Summary
-- [ ] 8.7 Implement Completion Rate
+- [x] 8.1 Implement CompletionCalculator
+- [x] 8.2 Implement Summary Use Case
+- [x] 8.3 Implement Daily Summary
+- [x] 8.4 Implement Weekly Summary
+- [x] 8.5 Implement Monthly Summary
+- [x] 8.6 Implement Category Summary
+- [x] 8.7 Implement Completion Rate
 
 ### Phase 9 — Charts
 
@@ -573,6 +573,44 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 8 — Summary and Statistics
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/service/CompletionCalculator.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/summary/GetSummaryUseCase.kt
+  - app/src/main/java/com/myhabbit/app/presentation/summary/SummaryScreen.kt
+  - app/src/main/java/com/myhabbit/app/presentation/summary/SummaryViewModel.kt
+  - app/src/test/java/com/myhabbit/app/domain/service/CompletionCalculatorTest.kt
+  - app/src/test/java/com/myhabbit/app/domain/usecase/summary/GetSummaryUseCaseTest.kt
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/AppNavigation.kt
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (59/59 total: 7 calculator + 4 use case baru)
+
+- Acceptance Criteria:
+  - [x] Completed count benar
+  - [x] Failed count benar
+  - [x] Pending tidak dihitung sebagai evaluated
+  - [x] Completion rate sesuai formula (8/10 = 80%)
+  - [x] Evaluated = 0 → rate 0%
+  - [x] Filter kategori (All/Daily/Weekly/Monthly) bekerja
+  - [x] Summary tidak memodifikasi data (read-only)
+
+- Known Issues:
+  - None
+
+- Notes:
+  - Rata-rata multi-periode memakai agregat, bukan rata-rata persen (ARCHITECTURE.md §12.3)
+  - Chart adalah Phase 9
 
 ### Feature: Phase 7 — History
 
