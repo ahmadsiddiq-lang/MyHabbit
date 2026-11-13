@@ -502,12 +502,12 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 7 — History
 
-- [ ] 7.1 Create History Screen
-- [ ] 7.2 Implement Daily History
-- [ ] 7.3 Implement Weekly History
-- [ ] 7.4 Implement Monthly History
-- [ ] 7.5 Implement Date Filtering
-- [ ] 7.6 Implement Historical Detail
+- [x] 7.1 Create History Screen
+- [x] 7.2 Implement Daily History
+- [x] 7.3 Implement Weekly History
+- [x] 7.4 Implement Monthly History
+- [x] 7.5 Implement Date Filtering
+- [x] 7.6 Implement Historical Detail
 
 ### Phase 8 — Summary and Statistics
 
@@ -573,6 +573,45 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 7 — History
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/usecase/history/GetHistoryUseCase.kt
+  - app/src/main/java/com/myhabbit/app/domain/usecase/history/HistoryEntry.kt
+  - app/src/main/java/com/myhabbit/app/presentation/history/HistoryScreen.kt
+  - app/src/main/java/com/myhabbit/app/presentation/history/HistoryViewModel.kt
+  - app/src/test/java/com/myhabbit/app/presentation/history/HistoryViewModelTest.kt
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/data/local/dao/HabitDao.kt (getAllHabitsAsFlow)
+  - app/src/main/java/com/myhabbit/app/data/local/dao/HabitRecordDao.kt (observeAllRecords)
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/Screen.kt
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/AppNavigation.kt
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardScreen.kt
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (48/48 total: 4 history filter tests baru)
+
+- Acceptance Criteria:
+  - [x] History list menampilkan judul habit, periode, status
+  - [x] Filter This Week: daily dalam minggu ISO ini + weekly minggu ini
+  - [x] Filter This Month: daily bulan ini + weekly yang beririsan + monthly bulan ini
+  - [x] Filter All: semua record
+  - [x] Data reaktif (Room Flow, combine)
+  - [x] Empty state per filter
+
+- Known Issues:
+  - Filter "This Week" sengaja tidak menampilkan monthly (periode bulanan melebihi satu minggu)
+
+- Notes:
+  - Weekly-to-month intersection dihitung dengan ISO week start/end date
 
 ### Feature: Phase 6 — Dashboard
 

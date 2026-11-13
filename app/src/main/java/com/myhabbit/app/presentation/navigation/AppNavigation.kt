@@ -21,6 +21,7 @@ import androidx.navigation.navArgument
 import com.myhabbit.app.presentation.activity.ActivityFormScreen
 import com.myhabbit.app.presentation.activity.ActivityListScreen
 import com.myhabbit.app.presentation.dashboard.DashboardScreen
+import com.myhabbit.app.presentation.history.HistoryScreen
 import com.myhabbit.app.presentation.profile.ProfileScreen
 import com.myhabbit.app.presentation.summary.SummaryScreen
 
@@ -71,11 +72,15 @@ fun AppNavigation() {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     onOpenActivityList = { navController.navigate(Screen.ActivityList.route) },
-                    onCreateActivity = { navController.navigate(Screen.ActivityForm.route) }
+                    onCreateActivity = { navController.navigate(Screen.ActivityForm.route) },
+                    onOpenHistory = { navController.navigate(Screen.History.route) }
                 )
             }
             composable(Screen.Summary.route) { SummaryScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
+            composable(Screen.History.route) {
+                HistoryScreen()
+            }
 
             composable(Screen.ActivityList.route) {
                 ActivityListScreen(

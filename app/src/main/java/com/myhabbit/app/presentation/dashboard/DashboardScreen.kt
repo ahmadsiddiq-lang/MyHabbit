@@ -49,6 +49,7 @@ import com.myhabbit.app.presentation.components.StatusSelector
 fun DashboardScreen(
     onOpenActivityList: () -> Unit,
     onCreateActivity: () -> Unit,
+    onOpenHistory: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -103,6 +104,9 @@ fun DashboardScreen(
                 }
                 TextButton(onClick = onOpenActivityList) {
                     Text("Lihat semua activity")
+                }
+                TextButton(onClick = onOpenHistory) {
+                    Text("Lihat history")
                 }
             }
             return@Scaffold

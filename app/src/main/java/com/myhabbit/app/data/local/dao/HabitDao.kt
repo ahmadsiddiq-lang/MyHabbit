@@ -20,6 +20,9 @@ interface HabitDao {
     @Query("SELECT * FROM habits ORDER BY createdAt ASC")
     suspend fun getAllHabits(): List<HabitEntity>
 
+    @Query("SELECT * FROM habits ORDER BY createdAt ASC")
+    fun getAllHabitsAsFlow(): Flow<List<HabitEntity>>
+
     @Query("SELECT * FROM habits WHERE id = :id")
     suspend fun getHabitById(id: String): HabitEntity?
 

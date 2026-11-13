@@ -26,6 +26,9 @@ interface HabitRecordDao {
     @Query("SELECT * FROM habit_records ORDER BY periodKey DESC")
     suspend fun getAllRecords(): List<HabitRecordEntity>
 
+    @Query("SELECT * FROM habit_records ORDER BY periodKey DESC")
+    fun observeAllRecords(): Flow<List<HabitRecordEntity>>
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertRecord(record: HabitRecordEntity)
 
