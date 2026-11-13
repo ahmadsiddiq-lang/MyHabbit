@@ -474,12 +474,12 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 4 — Period Engine
 
-- [ ] 4.1 Implement Daily Period
-- [ ] 4.2 Implement Weekly Period
-- [ ] 4.3 Implement Monthly Period
-- [ ] 4.4 Implement PeriodCalculator
-- [ ] 4.5 Implement Period Boundary Handling
-- [ ] 4.6 Test Period Calculation
+- [x] 4.1 Implement Daily Period
+- [x] 4.2 Implement Weekly Period
+- [x] 4.3 Implement Monthly Period
+- [x] 4.4 Implement PeriodCalculator
+- [x] 4.5 Implement Period Boundary Handling
+- [x] 4.6 Test Period Calculation
 
 ### Phase 5 — Status Management
 
@@ -573,6 +573,43 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 4 — Period Engine
+
+- Status: COMPLETED
+- Date: 2026-11-13
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/service/PeriodCalculator.kt
+  - app/src/main/java/com/myhabbit/app/domain/service/PeriodCalculatorImpl.kt
+  - app/src/test/java/com/myhabbit/app/domain/service/PeriodCalculatorTest.kt
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/di/AppModule.kt (provide PeriodCalculator)
+  - app/build.gradle.kts (core library desugaring untuk java.time di minSdk 24)
+  - gradle/libs.versions.toml (desugar_jdk_libs)
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (32/32 total: 16 period calculator + 8 DAO + 8 use case)
+
+- Acceptance Criteria:
+  - [x] Daily: format YYYY-MM-DD
+  - [x] Weekly: format YYYY-Www, ISO week (Senin s/d Minggu), week-based year
+  - [x] Monthly: format YYYY-MM, akhir bulan benar (termasuk Februari kabisat 29)
+  - [x] PeriodCalculator interface sesuai ARCHITECTURE.md §8.4
+  - [x] Boundary minggu: Sabtu & Minggu satu minggu, Senin = minggu baru
+  - [x] Boundary tahun ISO: 1 Jan 2027 = 2026-W53
+  - [x] Periode baru = key baru, tidak menghapus record lama
+
+- Known Issues:
+  - None
+
+- Notes:
+  - java.time untuk minSdk 24 memerlukan core library desugaring (sudah diaktifkan)
+  - Perhitungan tanggal lokal device (PRD.md §52)
 
 ### Feature: Phase 3 — Activity Management
 
