@@ -11,10 +11,12 @@ import com.myhabbit.app.data.repository.HabitRecordRepositoryImpl
 import com.myhabbit.app.data.repository.HabitRepositoryImpl
 import com.myhabbit.app.data.repository.AuthRepositoryImpl
 import com.myhabbit.app.data.repository.BackupRepositoryImpl
+import com.myhabbit.app.data.repository.SettingsRepositoryImpl
 import com.myhabbit.app.domain.repository.AuthRepository
 import com.myhabbit.app.domain.repository.BackupRepository
 import com.myhabbit.app.domain.repository.HabitRecordRepository
 import com.myhabbit.app.domain.repository.HabitRepository
+import com.myhabbit.app.domain.repository.SettingsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -69,4 +71,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindBackupRepository(impl: BackupRepositoryImpl): BackupRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(impl: SettingsRepositoryImpl): SettingsRepository
 }

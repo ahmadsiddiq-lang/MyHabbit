@@ -88,6 +88,9 @@ dependencies {
     implementation(libs.play.services.auth)
     implementation(libs.google.api.services.drive)
     implementation(libs.google.http.client.gson)
+
+    // Reminder notification (PRD.md §48)
+    implementation(libs.androidx.work.runtime.ktx)
     
     debugImplementation(libs.androidx.ui.tooling)
     

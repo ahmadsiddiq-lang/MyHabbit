@@ -5,6 +5,7 @@ import com.myhabbit.app.domain.model.AuthResult
 import com.myhabbit.app.domain.model.User
 import com.myhabbit.app.domain.repository.AuthRepository
 import com.myhabbit.app.domain.repository.BackupRepository
+import com.myhabbit.app.domain.repository.SettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ class ProfileViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var authRepository: AuthRepository
     private lateinit var backupRepository: BackupRepository
+    private lateinit var settingsRepository: SettingsRepository
     private val currentUserFlow = MutableStateFlow<User?>(null)
     private val activityContext: Context = Mockito.mock(Context::class.java)
 
@@ -44,9 +46,14 @@ class ProfileViewModelTest {
         Dispatchers.setMain(testDispatcher)
         authRepository = Mockito.mock(AuthRepository::class.java)
         backupRepository = Mockito.mock(BackupRepository::class.java)
+        settingsRepository = Mockito.mock(SettingsRepository::class.java)
         Mockito.`when`(authRepository.observeCurrentUser()).thenReturn(currentUserFlow)
         Mockito.`when`(backupRepository.observeLastBackupAt())
             .thenReturn(MutableStateFlow<Long?>(null))
+        Mockito.`when`(settingsRepository.observeTheme())
+            .thenReturn(MutableStateFlow("system"))
+        Mockito.`when`(settingsRepository.observeNotificationsEnabled())
+            .thenReturn(MutableStateFlow(false))
     }
 
     @After
@@ -56,7 +63,7 @@ class ProfileViewModelTest {
 
     @Test
     fun uiState_initiallySignedOut() = runTest(testDispatcher) {
-        val viewModel = ProfileViewModel(authRepository, backupRepository)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
 
         val state = viewModel.uiState.first { !it.isLoading }
 
@@ -71,7 +78,7 @@ class ProfileViewModelTest {
             currentUserFlow.value = testUser
             AuthResult.Success(testUser)
         }
-        val viewModel = ProfileViewModel(authRepository, backupRepository)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
         viewModel.uiState.first { !it.isLoading }
 
         viewModel.signIn(activityContext)
@@ -85,7 +92,7 @@ class ProfileViewModelTest {
     fun signIn_error_setsErrorWithoutUser() = runTest(testDispatcher) {
         Mockito.`when`(authRepository.signIn(activityContext))
             .thenReturn(AuthResult.Error("Login dibatalkan"))
-        val viewModel = ProfileViewModel(authRepository, backupRepository)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
         viewModel.uiState.first { !it.isLoading }
 
         viewModel.signIn(activityContext)
@@ -102,7 +109,7 @@ class ProfileViewModelTest {
             currentUserFlow.value = null
             Unit
         }
-        val viewModel = ProfileViewModel(authRepository, backupRepository)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
         viewModel.uiState.first { it.user != null }
 
         viewModel.signOut()
@@ -115,7 +122,7 @@ class ProfileViewModelTest {
     @Test
     fun exportBackup_success_setsMessage() = runTest(testDispatcher) {
         Mockito.`when`(backupRepository.exportToJson()).thenReturn("{\"schemaVersion\":1}")
-        val viewModel = ProfileViewModel(authRepository, backupRepository)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
         viewModel.uiState.first { !it.isLoading }
 
         viewModel.exportBackup()
@@ -128,7 +135,7 @@ class ProfileViewModelTest {
     fun exportBackup_failure_setsErrorMessage() = runTest(testDispatcher) {
         Mockito.`when`(backupRepository.exportToJson())
             .thenThrow(RuntimeException("disk full"))
-        val viewModel = ProfileViewModel(authRepository, backupRepository)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
         viewModel.uiState.first { !it.isLoading }
 
         viewModel.exportBackup()
@@ -136,5 +143,27 @@ class ProfileViewModelTest {
         val state = viewModel.uiState.first { it.backupMessage != null }
         assertTrue(state.backupMessage?.contains("gagal") == true)
         assertTrue(state.backupMessage?.contains("disk full") == true)
+    }
+
+    @Test
+    fun onThemeChange_persists() = runTest(testDispatcher) {
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
+        viewModel.uiState.first { !it.isLoading }
+
+        viewModel.onThemeChange("dark")
+        testScheduler.advanceUntilIdle()
+
+        Mockito.verify(settingsRepository).setTheme("dark")
+    }
+
+    @Test
+    fun onNotificationsChange_persists() = runTest(testDispatcher) {
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
+        viewModel.uiState.first { !it.isLoading }
+
+        viewModel.onNotificationsChange(true)
+        testScheduler.advanceUntilIdle()
+
+        Mockito.verify(settingsRepository).setNotificationsEnabled(true)
     }
 }

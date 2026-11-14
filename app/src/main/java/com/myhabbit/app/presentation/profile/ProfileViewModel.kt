@@ -7,6 +7,7 @@ import com.myhabbit.app.domain.model.AuthResult
 import com.myhabbit.app.domain.model.User
 import com.myhabbit.app.domain.repository.AuthRepository
 import com.myhabbit.app.domain.repository.BackupRepository
+import com.myhabbit.app.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,33 +23,55 @@ data class ProfileUiState(
     val isSigningIn: Boolean = false,
     val error: String? = null,
     val backupMessage: String? = null,
+    val lastBackupAt: Long? = null,
+    val theme: String = "system",
+    val notificationsEnabled: Boolean = false
+)
+
+/** State inti — di-combine dulu agar tidak melebihi 5 flow per combine. */
+private data class ProfileCoreState(
+    val user: User? = null,
+    val isSigningIn: Boolean = false,
+    val error: String? = null,
+    val backupMessage: String? = null,
     val lastBackupAt: Long? = null
 )
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val backupRepository: BackupRepository
+    private val backupRepository: BackupRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val isSigningIn = MutableStateFlow(false)
     private val signInError = MutableStateFlow<String?>(null)
     private val backupMessage = MutableStateFlow<String?>(null)
 
-    val uiState: StateFlow<ProfileUiState> = combine(
+    private val coreState = combine(
         authRepository.observeCurrentUser(),
         isSigningIn,
         signInError,
         backupMessage,
         backupRepository.observeLastBackupAt()
     ) { user, signing, error, backup, lastBackup ->
+        ProfileCoreState(user, signing, error, backup, lastBackup)
+    }
+
+    val uiState: StateFlow<ProfileUiState> = combine(
+        coreState,
+        settingsRepository.observeTheme(),
+        settingsRepository.observeNotificationsEnabled()
+    ) { core, theme, notifications ->
         ProfileUiState(
             isLoading = false,
-            user = user,
-            isSigningIn = signing,
-            error = error,
-            backupMessage = backup,
-            lastBackupAt = lastBackup
+            user = core.user,
+            isSigningIn = core.isSigningIn,
+            error = core.error,
+            backupMessage = core.backupMessage,
+            lastBackupAt = core.lastBackupAt,
+            theme = theme,
+            notificationsEnabled = notifications
         )
     }.stateIn(
         scope = viewModelScope,
@@ -128,6 +151,18 @@ class ProfileViewModel @Inject constructor(
                 null -> "Restore berhasil — data berhasil diganti dari Drive"
                 else -> "Restore dari Drive gagal: $error"
             }
+        }
+    }
+
+    fun onThemeChange(theme: String) {
+        viewModelScope.launch {
+            settingsRepository.setTheme(theme)
+        }
+    }
+
+    fun onNotificationsChange(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setNotificationsEnabled(enabled)
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.myhabbit.app.presentation.profile
 
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +22,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -74,6 +80,16 @@ fun ProfileScreen(
         }
 
         AboutCard()
+
+        ThemeCard(
+            selected = state.theme,
+            onSelect = { viewModel.onThemeChange(it) }
+        )
+
+        NotificationCard(
+            enabled = state.notificationsEnabled,
+            onToggle = { viewModel.onNotificationsChange(it) }
+        )
 
         DriveBackupCard(
             lastBackupAt = state.lastBackupAt,
@@ -274,6 +290,89 @@ private fun DriveBackupCard(
                     Text("Tutup")
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ThemeCard(
+    selected: String,
+    onSelect: (String) -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Text(
+                text = "Theme",
+                style = MaterialTheme.typography.labelLarge
+            )
+            listOf(
+                "system" to "System Default",
+                "light" to "Light",
+                "dark" to "Dark"
+            ).forEach { (value, label) ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    RadioButton(
+                        selected = selected == value,
+                        onClick = { onSelect(value) }
+                    )
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NotificationCard(
+    enabled: Boolean,
+    onToggle: (Boolean) -> Unit
+) {
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) onToggle(true)
+    }
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "Notifications",
+                    style = MaterialTheme.typography.labelLarge
+                )
+                Text(
+                    text = "Pengingat harian pukul 20:00 untuk menandai aktivitas",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(
+                checked = enabled,
+                onCheckedChange = { checked ->
+                    if (checked && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        onToggle(checked)
+                    }
+                }
+            )
         }
     }
 }
