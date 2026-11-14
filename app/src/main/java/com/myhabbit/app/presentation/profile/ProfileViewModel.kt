@@ -1,6 +1,7 @@
 package com.myhabbit.app.presentation.profile
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myhabbit.app.domain.model.AuthResult
@@ -106,7 +107,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     /** Export: "Restoring data will replace current data" (PRD.md §34) —
-     *  import menimpa semua data, jadi konfirmasi dilakukan di UI. */
+     *  import menimpa semua data, konfirmasi dilakukan di UI. */
     fun exportBackup() {
         viewModelScope.launch {
             backupMessage.value = try {
@@ -118,15 +119,11 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    fun importBackup() {
+    /** Import dari file pilihan user (SAF) — dipanggil SETELAH konfirmasi. */
+    fun importFromUri(activityContext: Context, uri: Uri) {
         viewModelScope.launch {
-            val local = backupRepository.readBackupFile()
-                ?: run {
-                    backupMessage.value = "Belum ada file backup. Export dulu atau taruh file di storage aplikasi."
-                    return@launch
-                }
-            backupMessage.value = when (val error = backupRepository.importFromJson(local)) {
-                null -> "Restore berhasil — data berhasil diganti dari backup"
+            backupMessage.value = when (val error = backupRepository.importFromUri(activityContext, uri)) {
+                null -> "Restore berhasil — data berhasil diganti dari file"
                 else -> "Import gagal: $error"
             }
         }

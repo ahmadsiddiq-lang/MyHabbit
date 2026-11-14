@@ -1,6 +1,7 @@
 package com.myhabbit.app.presentation.profile
 
 import android.content.Context
+import android.net.Uri
 import com.myhabbit.app.domain.model.AuthResult
 import com.myhabbit.app.domain.model.User
 import com.myhabbit.app.domain.repository.AuthRepository
@@ -165,5 +166,34 @@ class ProfileViewModelTest {
         testScheduler.advanceUntilIdle()
 
         Mockito.verify(settingsRepository).setNotificationsEnabled(true)
+    }
+
+    @Test
+    fun importFromUri_success_setsSuccessMessage() = runTest(testDispatcher) {
+        val uri = Mockito.mock(Uri::class.java)
+        Mockito.`when`(backupRepository.importFromUri(activityContext, uri)).thenReturn(null)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
+        viewModel.uiState.first { !it.isLoading }
+
+        viewModel.importFromUri(activityContext, uri)
+
+        val state = viewModel.uiState.first { it.backupMessage != null }
+        assertTrue(state.backupMessage?.contains("berhasil") == true)
+        assertTrue(state.backupMessage?.contains("file") == true)
+    }
+
+    @Test
+    fun importFromUri_failure_setsErrorMessage() = runTest(testDispatcher) {
+        val uri = Mockito.mock(Uri::class.java)
+        Mockito.`when`(backupRepository.importFromUri(activityContext, uri))
+            .thenReturn("File tidak dapat dibaca")
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
+        viewModel.uiState.first { !it.isLoading }
+
+        viewModel.importFromUri(activityContext, uri)
+
+        val state = viewModel.uiState.first { it.backupMessage != null }
+        assertTrue(state.backupMessage?.contains("gagal") == true)
+        assertTrue(state.backupMessage?.contains("File tidak dapat dibaca") == true)
     }
 }

@@ -1,6 +1,7 @@
 package com.myhabbit.app.domain.repository
 
 import android.content.Context
+import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -25,6 +26,12 @@ interface BackupRepository {
      * Baca isi file backup lokal; null bila belum ada.
      */
     fun readBackupFile(): String?
+
+    /**
+     * Import dari file yang dipilih user via SAF.
+     * @return null jika sukses, atau pesan error.
+     */
+    suspend fun importFromUri(activityContext: Context, uri: Uri): String?
 
     /**
      * Backup ke Google Drive: export → validasi → upload →

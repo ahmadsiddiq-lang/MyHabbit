@@ -706,8 +706,8 @@ After completing each feature, add a record here.
   - [x] Backup file app-specific storage (tanpa permission)
 
 - Known Issues:
-  - Restore dari UI belum support pilih file eksternal (SAF) — baca file dari storage aplikasi; SAF opsional untuk polish
-  - Konfirmasi "replace data" di UI masih inline message, belum dialog peringatan eksplisit (PRD §34)
+  - (resolved 2026-11-14) Restore dari UI kini support pilih file eksternal via SAF (OpenDocument, mime json/text)
+  - (resolved 2026-11-14) Konfirmasi "replace data" kini dialog peringatan eksplisit sesuai PRD §34 — berlaku untuk import file dan restore Drive
 
 - Notes:
   - Timestamp JSON memakai epoch millis Long (deviasi dari contoh ISO PRD — internal model juga epoch)

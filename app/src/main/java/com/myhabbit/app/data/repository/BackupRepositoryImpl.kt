@@ -1,6 +1,7 @@
 package com.myhabbit.app.data.repository
 
 import android.content.Context
+import android.net.Uri
 import com.myhabbit.app.data.backup.BackupExporter
 import com.myhabbit.app.data.backup.BackupImporter
 import com.myhabbit.app.data.backup.BackupSerializer
@@ -52,6 +53,19 @@ class BackupRepositoryImpl @Inject constructor(
     override fun readBackupFile(): String? {
         val file = backupFile()
         return if (file.exists()) file.readText() else null
+    }
+
+    override suspend fun importFromUri(activityContext: Context, uri: Uri): String? {
+        val text = try {
+            activityContext.contentResolver
+                .openInputStream(uri)
+                ?.bufferedReader()
+                ?.use { it.readText() }
+        } catch (_: Exception) {
+            null
+        } ?: return "File tidak dapat dibaca"
+
+        return importFromJson(text)
     }
 
     override suspend fun backupToDrive(activityContext: Context): String? {

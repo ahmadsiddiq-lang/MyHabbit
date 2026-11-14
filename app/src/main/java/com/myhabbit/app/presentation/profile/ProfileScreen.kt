@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,6 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,12 +42,52 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myhabbit.app.domain.model.User
 
+/** Sumber restore — untuk konfirmasi dialog (PRD.md §34). */
+private enum class RestoreSource { FILE, DRIVE }
+
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+
+    // Konfirmasi restore: "Restoring data will replace current data"
+    var restoreSource by remember { mutableStateOf<RestoreSource?>(null) }
+
+    val filePicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { viewModel.importFromUri(context, it) }
+    }
+
+    restoreSource?.let { source ->
+        AlertDialog(
+            onDismissRequest = { restoreSource = null },
+            title = { Text("Restore data") },
+            text = {
+                Text("Restoring data will replace current data.\nSemua data saat ini akan diganti dengan isi backup.")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    restoreSource = null
+                    when (source) {
+                        RestoreSource.FILE -> filePicker.launch(
+                            arrayOf("application/json", "text/plain")
+                        )
+                        RestoreSource.DRIVE -> viewModel.restoreFromDrive(context)
+                    }
+                }) {
+                    Text("Continue")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { restoreSource = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -91,11 +135,18 @@ fun ProfileScreen(
             onToggle = { viewModel.onNotificationsChange(it) }
         )
 
+        BackupCard(
+            message = state.backupMessage,
+            onExport = { viewModel.exportBackup() },
+            onImport = { restoreSource = RestoreSource.FILE },
+            onDismissMessage = { viewModel.clearBackupMessage() }
+        )
+
         DriveBackupCard(
             lastBackupAt = state.lastBackupAt,
             message = state.backupMessage,
             onBackupToDrive = { viewModel.backupToDrive(context) },
-            onRestoreFromDrive = { viewModel.restoreFromDrive(context) },
+            onRestoreFromDrive = { restoreSource = RestoreSource.DRIVE },
             onDismissMessage = { viewModel.clearBackupMessage() }
         )
 

@@ -1,6 +1,8 @@
 package com.myhabbit.app.data.repository
 
+import android.content.ContentResolver
 import android.content.Context
+import android.net.Uri
 import com.myhabbit.app.data.backup.BackupData
 import com.myhabbit.app.data.backup.AppJson
 import com.myhabbit.app.data.backup.BackupExporter
@@ -11,6 +13,7 @@ import com.myhabbit.app.data.backup.BackupValidator
 import com.myhabbit.app.data.drive.GoogleDriveManager
 import com.myhabbit.app.data.local.dao.SettingsDao
 import com.myhabbit.app.data.local.entity.SettingsEntity
+import java.io.ByteArrayInputStream
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -152,5 +155,50 @@ class BackupRepositoryImplTest {
         val lastBackupAt = repository.observeLastBackupAt().first()
 
         assertEquals(12345L, lastBackupAt)
+    }
+
+    @Test
+    fun importFromUri_success_readsStreamAndImports() = runTest {
+        val json = serializer.serialize(sampleData)
+        val resolver = Mockito.mock(ContentResolver::class.java)
+        val uri = Mockito.mock(Uri::class.java)
+        whenever(activityContext.contentResolver).thenReturn(resolver)
+        whenever(resolver.openInputStream(uri))
+            .thenReturn(ByteArrayInputStream(json.toByteArray()))
+        whenever(importer.import(any())).thenReturn(BackupValidation.Valid)
+
+        val error = repository.importFromUri(activityContext, uri)
+
+        assertNull(error)
+        Mockito.verify(importer).import(json)
+    }
+
+    @Test
+    fun importFromUri_streamFails_returnsFriendlyMessage() = runTest {
+        val resolver = Mockito.mock(ContentResolver::class.java)
+        val uri = Mockito.mock(Uri::class.java)
+        whenever(activityContext.contentResolver).thenReturn(resolver)
+        whenever(resolver.openInputStream(uri)).thenReturn(null)
+
+        val error = repository.importFromUri(activityContext, uri)
+
+        assertEquals("File tidak dapat dibaca", error)
+        Mockito.verify(importer, Mockito.never()).import(any())
+    }
+
+    @Test
+    fun importFromUri_invalidBackup_returnsValidationReason() = runTest {
+        val json = serializer.serialize(sampleData)
+        val resolver = Mockito.mock(ContentResolver::class.java)
+        val uri = Mockito.mock(Uri::class.java)
+        whenever(activityContext.contentResolver).thenReturn(resolver)
+        whenever(resolver.openInputStream(uri))
+            .thenReturn(ByteArrayInputStream(json.toByteArray()))
+        whenever(importer.import(any()))
+            .thenReturn(BackupValidation.Invalid("Backup tidak valid"))
+
+        val error = repository.importFromUri(activityContext, uri)
+
+        assertEquals("Backup tidak valid", error)
     }
 }
