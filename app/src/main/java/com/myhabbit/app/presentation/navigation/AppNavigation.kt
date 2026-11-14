@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.myhabbit.app.R
 import com.myhabbit.app.presentation.activity.ActivityFormScreen
 import com.myhabbit.app.presentation.activity.ActivityListScreen
 import com.myhabbit.app.presentation.dashboard.DashboardScreen
@@ -25,16 +26,21 @@ import com.myhabbit.app.presentation.history.HistoryScreen
 import com.myhabbit.app.presentation.profile.ProfileScreen
 import com.myhabbit.app.presentation.summary.SummaryScreen
 
-private const val ICON_PLACEHOLDER = android.R.drawable.ic_dialog_info
+/** Item bottom nav — icon vector sesuai fungsi tiap tab. */
+private data class BottomNavItem(
+    val screen: Screen,
+    val label: String,
+    val iconRes: Int
+)
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
     val items = listOf(
-        Screen.Dashboard to "Beranda",
-        Screen.Summary to "Ringkasan",
-        Screen.Profile to "Profil"
+        BottomNavItem(Screen.Dashboard, "Beranda", R.drawable.ic_nav_dashboard),
+        BottomNavItem(Screen.Summary, "Ringkasan", R.drawable.ic_nav_summary),
+        BottomNavItem(Screen.Profile, "Profil", R.drawable.ic_nav_profile)
     )
 
     Scaffold(
@@ -42,16 +48,19 @@ fun AppNavigation() {
             NavigationBar {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentDestination = navBackStackEntry?.destination
-                items.forEach { (screen, label) ->
+                items.forEach { item ->
                     NavigationBarItem(
                         icon = {
-                            Icon(painterResource(ICON_PLACEHOLDER), contentDescription = label)
+                            Icon(
+                                painterResource(item.iconRes),
+                                contentDescription = item.label
+                            )
                         },
-                        label = { Text(label) },
+                        label = { Text(item.label) },
                         selected =
-                            currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                            currentDestination?.hierarchy?.any { it.route == item.screen.route } == true,
                         onClick = {
-                            navController.navigate(screen.route) {
+                            navController.navigate(item.screen.route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
