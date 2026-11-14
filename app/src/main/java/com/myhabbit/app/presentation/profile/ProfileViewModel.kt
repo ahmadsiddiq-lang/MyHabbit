@@ -21,7 +21,8 @@ data class ProfileUiState(
     val user: User? = null,
     val isSigningIn: Boolean = false,
     val error: String? = null,
-    val backupMessage: String? = null
+    val backupMessage: String? = null,
+    val lastBackupAt: Long? = null
 )
 
 @HiltViewModel
@@ -38,14 +39,16 @@ class ProfileViewModel @Inject constructor(
         authRepository.observeCurrentUser(),
         isSigningIn,
         signInError,
-        backupMessage
-    ) { user, signing, error, backup ->
+        backupMessage,
+        backupRepository.observeLastBackupAt()
+    ) { user, signing, error, backup, lastBackup ->
         ProfileUiState(
             isLoading = false,
             user = user,
             isSigningIn = signing,
             error = error,
-            backupMessage = backup
+            backupMessage = backup,
+            lastBackupAt = lastBackup
         )
     }.stateIn(
         scope = viewModelScope,
@@ -108,5 +111,23 @@ class ProfileViewModel @Inject constructor(
 
     fun clearBackupMessage() {
         backupMessage.value = null
+    }
+
+    fun backupToDrive(activityContext: Context) {
+        viewModelScope.launch {
+            backupMessage.value = when (val error = backupRepository.backupToDrive(activityContext)) {
+                null -> "Backup berhasil disimpan ke Google Drive"
+                else -> "Backup ke Drive gagal: $error"
+            }
+        }
+    }
+
+    fun restoreFromDrive(activityContext: Context) {
+        viewModelScope.launch {
+            backupMessage.value = when (val error = backupRepository.restoreFromDrive(activityContext)) {
+                null -> "Restore berhasil — data berhasil diganti dari Drive"
+                else -> "Restore dari Drive gagal: $error"
+            }
+        }
     }
 }

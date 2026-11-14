@@ -45,6 +45,8 @@ class ProfileViewModelTest {
         authRepository = Mockito.mock(AuthRepository::class.java)
         backupRepository = Mockito.mock(BackupRepository::class.java)
         Mockito.`when`(authRepository.observeCurrentUser()).thenReturn(currentUserFlow)
+        Mockito.`when`(backupRepository.observeLastBackupAt())
+            .thenReturn(MutableStateFlow<Long?>(null))
     }
 
     @After

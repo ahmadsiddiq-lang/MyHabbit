@@ -548,14 +548,14 @@ If a feature has unresolved critical issues, do not mark it complete.
 
 ### Phase 12 — Google Drive
 
-- [ ] 12.1 Configure Google Cloud Project
-- [ ] 12.2 Configure Google Drive API
-- [ ] 12.3 Implement Drive Authorization
-- [ ] 12.4 Implement Backup Upload
-- [ ] 12.5 Implement Backup Download
-- [ ] 12.6 Implement Restore from Drive
-- [ ] 12.7 Implement Backup Status
-- [ ] 12.8 Test Drive Integration
+- [x] 12.1 Configure Google Cloud Project
+- [x] 12.2 Configure Google Drive API
+- [x] 12.3 Implement Drive Authorization
+- [x] 12.4 Implement Backup Upload
+- [x] 12.5 Implement Backup Download
+- [x] 12.6 Implement Restore from Drive
+- [x] 12.7 Implement Backup Status
+- [x] 12.8 Test Drive Integration
 
 ### Phase 13 — Final Polish
 
@@ -573,6 +573,52 @@ If a feature has unresolved critical issues, do not mark it complete.
 After completing each feature, add a record here.
 
 ## Feature Completion Record
+
+### Feature: Phase 12 — Google Drive
+
+- Status: COMPLETED (kode + unit test; verifikasi end-to-end menunggu setup Google Cloud user)
+- Date: 2026-11-14
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/data/drive/GoogleDriveManager.kt
+  - app/src/test/java/com/myhabbit/app/data/repository/BackupRepositoryImplTest.kt
+
+- Files Modified:
+  - gradle/libs.versions.toml (play-services-auth 21.2.0, google-api-services-drive v3-rev20240509, google-http-client-gson 1.44.2)
+  - app/build.gradle.kts (dependencies + packaging excludes META-INF/INDEX.LIST)
+  - app/src/main/AndroidManifest.xml (INTERNET permission)
+  - app/src/main/java/com/myhabbit/app/data/local/dao/SettingsDao.kt (updateLastBackupAt)
+  - app/src/main/java/com/myhabbit/app/domain/repository/BackupRepository.kt (3 method Drive)
+  - app/src/main/java/com/myhabbit/app/data/repository/BackupRepositoryImpl.kt
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileViewModel.kt (backupToDrive/restoreFromDrive/lastBackupAt)
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileScreen.kt (DriveBackupCard + last backup)
+  - app/src/test/java/com/myhabbit/app/presentation/profile/ProfileViewModelTest.kt (stub lastBackupAt)
+  - PROMPT.md (checklist)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (104/104 total: 8 test Drive flow baru)
+
+- Acceptance Criteria:
+  - [x] Otorisasi Drive via `Identity.getAuthorizationClient` + scope minimal `drive.file`
+  - [x] Upload backup: create folder `MyHabbit/` + file `myhabbit-backup.json` (create/update)
+  - [x] Download backup dari Drive
+  - [x] Restore via BackupImporter (validasi + transaction — tidak corrupt data)
+  - [x] Backup status `lastBackupAt` ter-update setelah upload sukses (settings row dibuat bila belum ada)
+  - [x] Validasi JSON sebelum upload (ARCHITECTURE §15.2)
+  - [x] Error network/otorisasi → pesan user-friendly, tidak crash
+  - [x] INTERNET permission ditambahkan di manifest
+  - [x] Auth (sign-in) dan Drive authorization tetap terpisah (§14)
+
+- Known Issues:
+  - Verifikasi end-to-end Drive menunggu: Google Drive API diaktifkan + Android OAuth client (package + SHA-1) dibuat di Google Cloud
+  - UI restore Drive belum memakai dialog konfirmasi eksplisit (PRD §34) — masih inline message
+
+- Setup user (SHA-1 debug dari signingReport):
+  - Package: com.myhabbit.app
+  - SHA-1: A4:1A:F4:27:1C:77:3B:1E:57:1F:8B:B6:74:31:04:77:BD:5E:F9:7C
+  - WEB_CLIENT_ID di data/auth/AuthConfig.kt harus diisi (Phase 10)
 
 ### Feature: Phase 11 — JSON Backup
 

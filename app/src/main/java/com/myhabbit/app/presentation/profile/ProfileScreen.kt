@@ -75,10 +75,11 @@ fun ProfileScreen(
 
         AboutCard()
 
-        BackupCard(
+        DriveBackupCard(
+            lastBackupAt = state.lastBackupAt,
             message = state.backupMessage,
-            onExport = { viewModel.exportBackup() },
-            onImport = { viewModel.importBackup() },
+            onBackupToDrive = { viewModel.backupToDrive(context) },
+            onRestoreFromDrive = { viewModel.restoreFromDrive(context) },
             onDismissMessage = { viewModel.clearBackupMessage() }
         )
 
@@ -202,6 +203,65 @@ private fun BackupCard(
                 }
                 OutlinedButton(onClick = onImport) {
                     Text("Import backup")
+                }
+            }
+            message?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                TextButton(onClick = onDismissMessage) {
+                    Text("Tutup")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DriveBackupCard(
+    lastBackupAt: Long?,
+    message: String?,
+    onBackupToDrive: () -> Unit,
+    onRestoreFromDrive: () -> Unit,
+    onDismissMessage: () -> Unit
+) {
+    val lastBackupText = lastBackupAt?.let { time ->
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm")
+            .withZone(java.time.ZoneId.systemDefault())
+        formatter.format(java.time.Instant.ofEpochMilli(time))
+    }
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Backup Google Drive",
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = "Simpan backup ke folder MyHabbit/ di Google Drive. Restore akan mengganti data saat ini.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = if (lastBackupText != null) "Last backup: $lastBackupText"
+                else "Belum pernah backup ke Drive",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(onClick = onBackupToDrive) {
+                    Text("Backup ke Drive")
+                }
+                OutlinedButton(onClick = onRestoreFromDrive) {
+                    Text("Restore dari Drive")
                 }
             }
             message?.let {

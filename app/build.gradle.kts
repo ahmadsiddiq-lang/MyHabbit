@@ -47,6 +47,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/INDEX.LIST"
+            excludes += "/META-INF/DEPENDENCIES"
         }
     }
 }
@@ -81,6 +83,11 @@ dependencies {
 
     // JSON Backup (Kotlin Serialization — ARCHITECTURE.md §16)
     implementation(libs.kotlinx.serialization.json)
+
+    // Google Drive backup (ARCHITECTURE.md §15)
+    implementation(libs.play.services.auth)
+    implementation(libs.google.api.services.drive)
+    implementation(libs.google.http.client.gson)
     
     debugImplementation(libs.androidx.ui.tooling)
     

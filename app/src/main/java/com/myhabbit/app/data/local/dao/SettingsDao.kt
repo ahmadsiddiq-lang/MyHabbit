@@ -14,6 +14,9 @@ interface SettingsDao {
     @Query("SELECT * FROM settings WHERE id = :id")
     suspend fun getSettings(id: Int = 1): SettingsEntity?
 
+    @Query("UPDATE settings SET lastBackupAt = :time WHERE id = 1")
+    suspend fun updateLastBackupAt(time: Long)
+
     @Query("SELECT * FROM settings WHERE id = 1")
     fun observeSettings(): Flow<SettingsEntity?>
 
