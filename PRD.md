@@ -2512,8 +2512,10 @@ Ditampilkan ±1,6 detik saat aplikasi dibuka.
 ## 82.4 Penyesuaian dari mockup
 
 - Login: HANYA Google Sign-In (mockup punya "Masuk dengan Email" — tidak diimplementasi).
-  Layar awal (mockup #2) tampil bila user belum login: gradient ungu + logo +
-  tombol "Masuk dengan Google" (logo `logo-google.png` → `drawable/ic_google.png`).
+  Layar awal (mockup #2) tampil bila user belum login: gradient ungu diagonal + logo +
+  tombol "Masuk dengan Google" (logo `logo-google.png` → `drawable/ic_google.png`);
+  logo + kartu terpusat vertikal; kartu & tombol pakai warna tetap (teks gelap di kartu
+  putih) agar tampilan identik di tema terang/gelap.
   Sudah login → langsung ke Beranda; sesi tersimpan (Room).
 - Beranda: tab filter Harian/Mingguan/Bulanan (mockup #3) mengganti section berurutan —
   default tab Harian, tab terpilih berbentuk pill ungu terisi, yang lain outline;

@@ -603,6 +603,14 @@ After completing each feature, add a record here.
   - [x] Batal/gagal login menampilkan pesan error di kartu (unit test + UI state)
   - [x] Keluar (Profil → Keluar) akan mengembalikan ke layar login via flow user (observeCurrentUser)
 
+- UI Polish (revisi user — tampilan tidak mirip mockup):
+  - Logo + kartu pindah ke TENGAH vertikal (Spacer weight 1f atas / 1.2f bawah), bukan menempel bawah
+  - Background gradient diagonal (Offset.Zero → Offset.Infinite, #8F83F5 → #6A5AE0 → #5246C8)
+  - Kartu + tombol pakai warna TETAP (bukan MaterialTheme): kartu putih, judul #1B1B21, subtitle #46464F,
+    border tombol #DADCE0, teks tombol #1B1B21, error #B3261E — kartu identik di tema terang & gelap
+    (dark mode device membuat teks tema-gelap pudar di kartu putih — bug "washed out", diperbaiki)
+  - Verifikasi ulang di device: layar login crisp & terpusat sesuai mockup; login end-to-end + persistensi OK
+
 - Known Issues:
   - Tidak ada
 

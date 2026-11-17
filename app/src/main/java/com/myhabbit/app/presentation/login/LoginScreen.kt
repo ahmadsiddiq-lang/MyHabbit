@@ -26,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -61,12 +62,15 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
+                // Gradient diagonal mockup #2: terang di kiri atas → ungu brand
+                Brush.linearGradient(
                     colors = listOf(
+                        Color(0xFF8F83F5),
                         Color(0xFF6A5AE0),
-                        BrandPrimary,
-                        Color(0xFF3D34A0)
-                    )
+                        Color(0xFF5246C8)
+                    ),
+                    start = Offset.Zero,
+                    end = Offset.Infinite
                 )
             ),
         contentAlignment = Alignment.Center
@@ -77,7 +81,7 @@ fun LoginScreen(
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
         ) {
-            Spacer(modifier = Modifier.weight(1.2f))
+            Spacer(modifier = Modifier.weight(1f))
 
             AppLogo(
                 size = 96.dp,
@@ -98,9 +102,11 @@ fun LoginScreen(
                 fontSize = 14.sp
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            // Kartu putih (mockup #2) di TENGAH layar, bukan menempel bawah
+            Spacer(modifier = Modifier.height(36.dp))
 
-            // Kartu putih (mockup #2) — tombol Google
+            // Kartu putih (mockup #2) — warna tetap agar konsisten di tema
+            // terang/gelap (kartu selalu putih dengan teks gelap)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,14 +117,14 @@ fun LoginScreen(
             ) {
                 Text(
                     text = "Selamat datang",
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = Color(0xFF1B1B21),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Masuk untuk melacak kebiasaan baikmu",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = Color(0xFF46464F),
                     style = MaterialTheme.typography.bodyMedium
                 )
 
@@ -142,13 +148,13 @@ fun LoginScreen(
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = error,
-                        color = MaterialTheme.colorScheme.error,
+                        color = Color(0xFFB3261E),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(1.2f))
         }
     }
 }
@@ -166,7 +172,7 @@ private fun GoogleSignInButton(
             .background(Color.White)
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
+                color = Color(0xFFDADCE0),
                 shape = RoundedCornerShape(50.dp)
             )
             .clickable(enabled = enabled, onClick = onClick)
@@ -183,7 +189,7 @@ private fun GoogleSignInButton(
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = "Masuk dengan Google",
-            color = MaterialTheme.colorScheme.onSurface,
+            color = Color(0xFF1B1B21),
             style = MaterialTheme.typography.labelLarge
         )
     }
