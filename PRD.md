@@ -2511,7 +2511,10 @@ Ditampilkan ±1,6 detik saat aplikasi dibuka.
 
 ## 82.4 Penyesuaian dari mockup
 
-- Login: HANYA Google Sign-In (mockup punya "Masuk dengan Email" — tidak diimplementasi)
+- Login: HANYA Google Sign-In (mockup punya "Masuk dengan Email" — tidak diimplementasi).
+  Layar awal (mockup #2) tampil bila user belum login: gradient ungu + logo +
+  tombol "Masuk dengan Google" (logo `logo-google.png` → `drawable/ic_google.png`).
+  Sudah login → langsung ke Beranda; sesi tersimpan (Room).
 - Beranda: tab filter Harian/Mingguan/Bulanan (mockup #3) mengganti section berurutan —
   default tab Harian, tab terpilih berbentuk pill ungu terisi, yang lain outline;
   tab tanpa activity menampilkan pesan "Belum ada activity di kategori ini"

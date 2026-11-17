@@ -574,6 +574,38 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Layar awal Login Google (mockup #2)
+
+- Status: COMPLETED
+- Date: 2026-11-17
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/presentation/login/LoginViewModel.kt (observeCurrentUser + signIn via AuthRepository; authChecked anti-flash)
+  - app/src/main/java/com/myhabbit/app/presentation/login/LoginScreen.kt (gradient ungu + logo + tagline + kartu putih tombol "Masuk dengan Google" dengan logo G; loading & error state)
+  - app/src/main/res/drawable/ic_google.png (dari logo-google.png yang ditambahkan user)
+  - app/src/test/java/com/myhabbit/app/presentation/login/LoginViewModelTest.kt (4 test)
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/AppNavigation.kt (gate: splash → belum login = LoginScreen → sudah login = NavHost)
+  - PRD.md (§82.4 detail layar login)
+  - logo-google.png (root, file user — tidak di-commit; hanya salinan drawable)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (137/137 — 4 test baru: state awal, login sukses, login gagal, clearError)
+
+- Acceptance Criteria:
+  - [x] User belum login → layar awal mockup #2: gradient ungu, logo ✓, "MyHabbit" + tagline, kartu putih tombol "Masuk dengan Google"
+  - [x] HANYA Google — tanpa input email/password (keputusan user)
+  - [x] Login end-to-end di device: sheet "Pilih akun" Google muncul → pilih akun → masuk ke Beranda
+  - [x] Sesi tersimpan: buka ulang aplikasi langsung ke Beranda (tidak minta login lagi)
+  - [x] Batal/gagal login menampilkan pesan error di kartu (unit test + UI state)
+  - [x] Keluar (Profil → Keluar) akan mengembalikan ke layar login via flow user (observeCurrentUser)
+
+- Known Issues:
+  - Tidak ada
+
 ### Feature: Post-release — Ringkasan Daftar + Chart sesuai mockup
 
 - Status: COMPLETED

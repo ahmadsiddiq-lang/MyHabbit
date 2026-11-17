@@ -27,9 +27,13 @@ import com.myhabbit.app.presentation.activity.ActivityFormScreen
 import com.myhabbit.app.presentation.activity.ActivityListScreen
 import com.myhabbit.app.presentation.dashboard.DashboardScreen
 import com.myhabbit.app.presentation.history.HistoryScreen
+import com.myhabbit.app.presentation.login.LoginScreen
+import com.myhabbit.app.presentation.login.LoginViewModel
 import com.myhabbit.app.presentation.profile.ProfileScreen
 import com.myhabbit.app.presentation.splash.SplashScreen
 import com.myhabbit.app.presentation.summary.SummaryScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.delay
 
 /** Item bottom nav — icon vector sesuai fungsi tiap tab. */
@@ -43,14 +47,22 @@ private data class BottomNavItem(
 fun AppNavigation() {
     val navController = rememberNavController()
 
+    // Status login (mockup UI.png #2): belum login → layar Login Google
+    val loginViewModel: LoginViewModel = hiltViewModel()
+    val loginState by loginViewModel.uiState.collectAsStateWithLifecycle()
+
     // Splash (mockup UI.png #1) — tampil singkat sebelum konten utama
     var showSplash by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         delay(1600)
         showSplash = false
     }
-    if (showSplash) {
+    if (showSplash || !loginState.authChecked) {
         SplashScreen()
+        return
+    }
+    if (loginState.user == null) {
+        LoginScreen(viewModel = loginViewModel)
         return
     }
 
