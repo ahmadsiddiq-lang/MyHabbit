@@ -574,6 +574,34 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Launcher Icon sesuai tema mockup
+
+- Status: COMPLETED
+- Date: 2026-11-17
+- Files Created:
+  - app/src/main/res/drawable/ic_launcher_foreground.xml (kotak putih rounded + ✓ ungu, viewport 108dp, safe zone)
+  - app/src/main/res/drawable/ic_launcher_monochrome.xml (siluet ✓ — themed icon Android 13+)
+  - app/src/main/res/values/ic_launcher_background.xml (warna latar #5246C8)
+  - app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml + ic_launcher_round.xml (adaptive icon)
+
+- Files Modified:
+  - PRD.md (§82.3: deskripsi launcher icon)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - Tidak ada test baru (perubahan resource murni; test suite tidak tersentuh)
+
+- Acceptance Criteria:
+  - [x] Launcher icon: lingkaran ungu + kotak putih ✓ ungu — konsisten dengan AppLogo di top bar & splash (mockup UI.png)
+  - [x] Adaptive icon dipakai API 26+ (device Android 12 tercakup); PNG lama tetap sebagai fallback API 24-25
+  - [x] Round icon & monochrome (themed icon) tersedia
+  - [x] Verifikasi device: icon MyHabbit di app drawer sesuai tema
+
+- Known Issues:
+  - PNG legacy (mipmap-*dpi) masih template bawaan — hanya dipakai Android 7.x ke bawah (di bawah minSdk 26 realistis tidak terlihat; biaya regenerate PNG via tool gambar dianggap tidak perlu)
+
 ### Feature: Post-release — Tab Filter Beranda (Harian/Mingguan/Bulanan)
 
 - Status: COMPLETED

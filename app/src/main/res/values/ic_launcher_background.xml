@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Warna latar launcher icon — brand ungu MyHabbit (PRD §82.1) -->
+<resources>
+    <color name="ic_launcher_background">#5246C8</color>
+</resources>

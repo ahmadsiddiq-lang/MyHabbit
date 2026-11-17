@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Foreground launcher icon MyHabbit — meniru AppLogo (mockup UI.png):
+    kotak putih bersudut dengan tanda centang ungu di tengah.
+    Viewport 108dp; konten dijaga di dalam safe zone (~66dp tengah).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Kotak putih rounded (32..76, radius 13) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M45,32 L63,32 A13,13 0 0 1 76,45 L76,63 A13,13 0 0 1 63,76 L45,76 A13,13 0 0 1 32,63 L32,45 A13,13 0 0 1 45,32 Z" />
+
+    <!-- Centang ungu -->
+    <path
+        android:pathData="M45,55 L51,61 L64,46"
+        android:strokeColor="#5246C8"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
