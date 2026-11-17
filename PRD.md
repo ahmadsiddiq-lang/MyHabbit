@@ -2510,5 +2510,7 @@ Ditampilkan ±1,6 detik saat aplikasi dibuka.
 ## 82.4 Penyesuaian dari mockup
 
 - Login: HANYA Google Sign-In (mockup punya "Masuk dengan Email" — tidak diimplementasi)
-- Beranda: section DAILY/WEEKLY/MONTHLY berurutan (bukan tab filter) — filter tab opsional di masa depan
+- Beranda: tab filter Harian/Mingguan/Bulanan (mockup #3) mengganti section berurutan —
+  default tab Harian, tab terpilih berbentuk pill ungu terisi, yang lain outline;
+  tab tanpa activity menampilkan pesan "Belum ada activity di kategori ini"
 - Popup konfirmasi hapus/restore/reset memakai AlertDialog Material, tetap sesuai gaya aplikasi

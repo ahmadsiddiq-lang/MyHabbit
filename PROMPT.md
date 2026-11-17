@@ -574,6 +574,35 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Tab Filter Beranda (Harian/Mingguan/Bulanan)
+
+- Status: COMPLETED
+- Date: 2026-11-17
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardScreen.kt (tab filter pill `DashboardTab` + state `selectedTab` default DAILY; section DAILY/WEEKLY/MONTHLY berurutan diganti SATU `habitSection` sesuai tab aktif; `habitSection` bertambah param `emptyMessage`)
+  - PRD.md (§82.4 diperbarui: tab filter mengganti section berurutan)
+  - UI.png (ditambahkan ke repo — referensi mockup resmi, PRD §82)
+
+- Files Created:
+  - UI.png (referensi mockup UI — commit disetujui user)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (126/126)
+
+- Acceptance Criteria:
+  - [x] Tab Harian/Mingguan/Bulanan tampil di bawah label tanggal (mockup #3)
+  - [x] Default tab Harian; pill terisi ungu saat aktif, outline saat tidak
+  - [x] Konten berubah sesuai tab: Harian → "minum", Mingguan → "olahraga" + Progress MINGGUAN
+  - [x] Tab Bulanan (kosong) menampilkan pesan "Belum ada activity di kategori ini" (tanpa kartu Progress)
+  - [x] Status popup, swipe-delete, tombol nav tetap berfungsi dalam semua tab
+  - [x] Verifikasi device: ketiga tab dicek via screenshot; duplikat "olahraga" dibersihkan via swipe-delete
+
+- Known Issues:
+  - Tidak ada (Progress card disembunyikan hanya untuk kategori kosong — perilaku sengaja)
+
 ### Feature: Post-release — UI Refresh sesuai mockup UI.png (warna, splash, ikon, popup status)
 
 - Status: COMPLETED

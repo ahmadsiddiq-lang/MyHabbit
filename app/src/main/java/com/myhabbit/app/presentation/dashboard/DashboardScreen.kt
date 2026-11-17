@@ -1,5 +1,7 @@
 package com.myhabbit.app.presentation.dashboard
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
@@ -40,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -73,6 +77,9 @@ fun DashboardScreen(
 
     // Popup "Pilih Status" (mockup UI.png #5) — kartu cukup 1 klik
     var statusTarget by remember { mutableStateOf<HabitWithStatus?>(null) }
+
+    // Tab filter aktif (mockup UI.png #3) — default Harian
+    var selectedTab by remember { mutableStateOf(HabitCategory.DAILY) }
 
     statusTarget?.let { item ->
         StatusPickerSheet(
@@ -195,33 +202,48 @@ fun DashboardScreen(
                 )
             }
 
-            if (state.daily.isNotEmpty()) {
-                habitSection(
-                    label = "DAILY",
-                    items = state.daily,
-                    onStatusChange = viewModel::onStatusChange,
-                    onDelete = { habitToDelete = it },
-                    onStatusClick = { statusTarget = it }
-                )
+            // Tab filter (mockup UI.png #3): Harian / Mingguan / Bulanan
+            item {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    DashboardTab(
+                        label = "Harian",
+                        selected = selectedTab == HabitCategory.DAILY,
+                        onClick = { selectedTab = HabitCategory.DAILY }
+                    )
+                    DashboardTab(
+                        label = "Mingguan",
+                        selected = selectedTab == HabitCategory.WEEKLY,
+                        onClick = { selectedTab = HabitCategory.WEEKLY }
+                    )
+                    DashboardTab(
+                        label = "Bulanan",
+                        selected = selectedTab == HabitCategory.MONTHLY,
+                        onClick = { selectedTab = HabitCategory.MONTHLY }
+                    )
+                }
             }
-            if (state.weekly.isNotEmpty()) {
-                habitSection(
-                    label = "WEEKLY",
-                    items = state.weekly,
-                    onStatusChange = viewModel::onStatusChange,
-                    onDelete = { habitToDelete = it },
-                    onStatusClick = { statusTarget = it }
-                )
+
+            val sectionItems = when (selectedTab) {
+                HabitCategory.DAILY -> state.daily
+                HabitCategory.WEEKLY -> state.weekly
+                HabitCategory.MONTHLY -> state.monthly
             }
-            if (state.monthly.isNotEmpty()) {
-                habitSection(
-                    label = "MONTHLY",
-                    items = state.monthly,
-                    onStatusChange = viewModel::onStatusChange,
-                    onDelete = { habitToDelete = it },
-                    onStatusClick = { statusTarget = it }
-                )
-            }
+
+            habitSection(
+                label = when (selectedTab) {
+                    HabitCategory.DAILY -> "HARIAN"
+                    HabitCategory.WEEKLY -> "MINGGUAN"
+                    HabitCategory.MONTHLY -> "BULANAN"
+                },
+                items = sectionItems,
+                onStatusChange = viewModel::onStatusChange,
+                onDelete = { habitToDelete = it },
+                onStatusClick = { statusTarget = it },
+                emptyMessage = "Belum ada activity di kategori ini"
+            )
 
             item {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
@@ -238,12 +260,57 @@ fun DashboardScreen(
     }
 }
 
+/** Tab filter (mockup UI.png #3): pill terisi ungu saat dipilih, outline saat tidak. */
+@Composable
+private fun DashboardTab(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(50.dp))
+            .background(
+                if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surface
+                }
+            )
+            .then(
+                if (selected) {
+                    Modifier
+                } else {
+                    Modifier.border(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outline,
+                        shape = RoundedCornerShape(50.dp)
+                    )
+                }
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 18.dp, vertical = 8.dp)
+            .semantics { contentDescription = "Tab $label" }
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (selected) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            }
+        )
+    }
+}
+
 private fun LazyListScope.habitSection(
     label: String,
     items: List<HabitWithStatus>,
     onStatusChange: (HabitWithStatus, HabitStatus) -> Unit,
     onDelete: (HabitWithStatus) -> Unit,
-    onStatusClick: (HabitWithStatus) -> Unit
+    onStatusClick: (HabitWithStatus) -> Unit,
+    emptyMessage: String? = null
 ) {
     item {
         Text(
@@ -252,6 +319,19 @@ private fun LazyListScope.habitSection(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 8.dp)
         )
+    }
+    if (items.isEmpty()) {
+        item {
+            if (emptyMessage != null) {
+                Text(
+                    text = emptyMessage,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                )
+            }
+        }
+        return
     }
     item {
         ProgressCard(
