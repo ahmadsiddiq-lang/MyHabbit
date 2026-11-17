@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -51,13 +51,19 @@ class ActivityViewModel @Inject constructor(
     private val _formState = MutableStateFlow(ActivityFormUiState())
     val formState: StateFlow<ActivityFormUiState> = _formState.asStateFlow()
 
-    val listState: StateFlow<ActivityListUiState> = getActiveHabitsUseCase()
-        .map { habits -> ActivityListUiState(habits = habits) }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = ActivityListUiState(isLoading = true)
-        )
+    /** Error dari aksi list (misal gagal hapus) — tampil di layar daftar. */
+    private val listError = MutableStateFlow<String?>(null)
+
+    val listState: StateFlow<ActivityListUiState> = combine(
+        getActiveHabitsUseCase(),
+        listError
+    ) { habits, error ->
+        ActivityListUiState(habits = habits, error = error)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = ActivityListUiState(isLoading = true)
+    )
 
     fun loadHabit(habitId: String) {
         if (_formState.value.isLoading) return
@@ -125,10 +131,8 @@ class ActivityViewModel @Inject constructor(
     fun deleteHabit(habitId: String) {
         viewModelScope.launch {
             when (val result = deleteHabitUseCase(habitId)) {
-                is AppResult.Error -> {
-                    _formState.value = _formState.value.copy(error = result.message)
-                }
-                else -> Unit
+                is AppResult.Error -> listError.value = result.message
+                else -> listError.value = null
             }
         }
     }

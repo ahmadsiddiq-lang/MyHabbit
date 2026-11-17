@@ -565,6 +565,17 @@ History lama tidak boleh hilang ketika activity diedit.
 
 Pengguna dapat menghapus activity.
 
+Cara menghapus (interaction):
+
+```text
+Geser kartu activity ke KIRI pada daftar Activity
+→ tombol "Hapus" (merah) muncul di sisi kanan kartu
+→ ketuk tombol tersebut
+→ dialog konfirmasi muncul (lihat di bawah)
+```
+
+Geser kembali ke kanan atau lepas di tengah jalan menutup kembali tombol Hapus.
+
 Sebelum delete:
 
 ```text
