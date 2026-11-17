@@ -1,6 +1,8 @@
 package com.myhabbit.app.presentation.dashboard
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,11 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -20,6 +24,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -45,7 +50,9 @@ import com.myhabbit.app.domain.model.HabitCategory
 import com.myhabbit.app.domain.model.HabitStatus
 import com.myhabbit.app.domain.usecase.record.HabitWithStatus
 import com.myhabbit.app.presentation.components.ProgressCard
-import com.myhabbit.app.presentation.components.StatusSelector
+import com.myhabbit.app.presentation.components.StatusIcon
+import com.myhabbit.app.presentation.components.StatusPickerSheet
+import com.myhabbit.app.ui.common.AppLogo
 import com.myhabbit.app.ui.common.SwipeToDeleteContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,6 +61,7 @@ fun DashboardScreen(
     onOpenActivityList: () -> Unit,
     onCreateActivity: () -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenProfile: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -62,6 +70,19 @@ fun DashboardScreen(
     // Konfirmasi hapus: "Restoring data" tidak berlaku di sini —
     // dialog delete activity (PRD.md §16)
     var habitToDelete by remember { mutableStateOf<HabitWithStatus?>(null) }
+
+    // Popup "Pilih Status" (mockup UI.png #5) — kartu cukup 1 klik
+    var statusTarget by remember { mutableStateOf<HabitWithStatus?>(null) }
+
+    statusTarget?.let { item ->
+        StatusPickerSheet(
+            onStatusSelected = { status ->
+                viewModel.onStatusChange(item, status)
+                statusTarget = null
+            },
+            onDismiss = { statusTarget = null }
+        )
+    }
 
     habitToDelete?.let { item ->
         AlertDialog(
@@ -93,7 +114,25 @@ fun DashboardScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("MyHabbit") })
+            TopAppBar(
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AppLogo()
+                        Text(
+                            text = "MyHabbit",
+                            modifier = Modifier.padding(start = 10.dp)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = onOpenProfile,
+                        modifier = Modifier.semantics { contentDescription = "Buka profil" }
+                    ) {
+                        Icon(Icons.Filled.Person, contentDescription = null)
+                    }
+                }
+            )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
@@ -161,7 +200,8 @@ fun DashboardScreen(
                     label = "DAILY",
                     items = state.daily,
                     onStatusChange = viewModel::onStatusChange,
-                    onDelete = { habitToDelete = it }
+                    onDelete = { habitToDelete = it },
+                    onStatusClick = { statusTarget = it }
                 )
             }
             if (state.weekly.isNotEmpty()) {
@@ -169,7 +209,8 @@ fun DashboardScreen(
                     label = "WEEKLY",
                     items = state.weekly,
                     onStatusChange = viewModel::onStatusChange,
-                    onDelete = { habitToDelete = it }
+                    onDelete = { habitToDelete = it },
+                    onStatusClick = { statusTarget = it }
                 )
             }
             if (state.monthly.isNotEmpty()) {
@@ -177,7 +218,8 @@ fun DashboardScreen(
                     label = "MONTHLY",
                     items = state.monthly,
                     onStatusChange = viewModel::onStatusChange,
-                    onDelete = { habitToDelete = it }
+                    onDelete = { habitToDelete = it },
+                    onStatusClick = { statusTarget = it }
                 )
             }
 
@@ -200,7 +242,8 @@ private fun LazyListScope.habitSection(
     label: String,
     items: List<HabitWithStatus>,
     onStatusChange: (HabitWithStatus, HabitStatus) -> Unit,
-    onDelete: (HabitWithStatus) -> Unit
+    onDelete: (HabitWithStatus) -> Unit,
+    onStatusClick: (HabitWithStatus) -> Unit
 ) {
     item {
         Text(
@@ -236,11 +279,18 @@ private fun LazyListScope.habitSection(
                     Column(modifier = Modifier.weight(1f)) {
                         Text(text = item.habit.title)
                     }
-                    Spacer(modifier = Modifier.width(4.dp))
-                    StatusSelector(
-                        currentStatus = item.status,
-                        onStatusSelected = { onStatusChange(item, it) }
-                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    // Ikon status saat ini — ketuk untuk membuka popup
+                    // "Pilih Status" (mockup UI.png #5)
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clickable { onStatusClick(item) }
+                            .semantics { contentDescription = "Pilih status ${item.habit.title}" },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        StatusIcon(status = item.status)
+                    }
                 }
             }
         }

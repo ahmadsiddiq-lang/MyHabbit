@@ -433,6 +433,21 @@ Selama pengguna dapat dengan mudah memilih:
 - Completed
 - Failed
 
+### Implementasi terpilih (mockup UI.png #5)
+
+Kartu di Beranda menampilkan SATU ikon status (○ / ✓ hijau / ✕ merah).
+Ketuk ikon tersebut → bottom sheet "Pilih Status" muncul dengan opsi:
+
+```text
+Pilih Status
+
+✓  Selesai          (Tandai sebagai selesai)
+✕  Tidak Dilakukan  (Tandai sebagai gagal)
+○  Belum dinilai    (Kembalikan ke belum dinilai)
+
+[Batal]
+```
+
 ---
 
 # 11. Create Activity
@@ -2464,3 +2479,36 @@ Pengguna melihat kelemahan.
 Pengguna memperbaiki kebiasaan.
 
 Siklus tersebut menjadi inti dari MyHabbit.
+
+---
+
+# 82. UI Reference (UI.png)
+
+File `UI.png` adalah referensi tampilan (mockup) MyHabbit.
+Implementasi mengikuti referensi ini dengan beberapa penyesuaian.
+
+## 82.1 Warna (Brand)
+
+- Ungu utama: #5246C8 (terang) / #C3BBFF (gelap) — top bar, tombol utama
+- Container lavender: #E4DFFF (kartu Progress/FAB terang)
+- Status Selesai: hijau ✓ (#2E7D32 terang / #8BD98F gelap)
+- Status Tidak Dilakukan: merah ✕ (#B3261E terang / #FFB4AB gelap)
+- Dynamic color (Material You) TIDAK dipakai — brand konsisten dengan mockup
+
+## 82.2 Splash Screen
+
+Sesuai mockup #1: latar gradient ungu, logo kotak putih dengan ✓ ungu,
+teks "MyHabbit" + tagline "Track • Plan • Achieve", spinner putih.
+Ditampilkan ±1,6 detik saat aplikasi dibuka.
+
+## 82.3 Ikon
+
+- Top bar Beranda: logo ✓ kecil + judul "MyHabbit" + ikon person (buka Profil)
+- Status: lingkaran berisi ✓ hijau / ✕ merah / ○ kosong (simbol + warna)
+- Bottom nav: Beranda (rumah), Ringkasan (grafik), Profil (orang)
+
+## 82.4 Penyesuaian dari mockup
+
+- Login: HANYA Google Sign-In (mockup punya "Masuk dengan Email" — tidak diimplementasi)
+- Beranda: section DAILY/WEEKLY/MONTHLY berurutan (bukan tab filter) — filter tab opsional di masa depan
+- Popup konfirmasi hapus/restore/reset memakai AlertDialog Material, tetap sesuai gaya aplikasi

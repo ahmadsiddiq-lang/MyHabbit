@@ -7,7 +7,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -24,7 +28,9 @@ import com.myhabbit.app.presentation.activity.ActivityListScreen
 import com.myhabbit.app.presentation.dashboard.DashboardScreen
 import com.myhabbit.app.presentation.history.HistoryScreen
 import com.myhabbit.app.presentation.profile.ProfileScreen
+import com.myhabbit.app.presentation.splash.SplashScreen
 import com.myhabbit.app.presentation.summary.SummaryScreen
+import kotlinx.coroutines.delay
 
 /** Item bottom nav — icon vector sesuai fungsi tiap tab. */
 private data class BottomNavItem(
@@ -36,6 +42,17 @@ private data class BottomNavItem(
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+
+    // Splash (mockup UI.png #1) — tampil singkat sebelum konten utama
+    var showSplash by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        delay(1600)
+        showSplash = false
+    }
+    if (showSplash) {
+        SplashScreen()
+        return
+    }
 
     val items = listOf(
         BottomNavItem(Screen.Dashboard, "Beranda", R.drawable.ic_nav_dashboard),
@@ -82,7 +99,8 @@ fun AppNavigation() {
                 DashboardScreen(
                     onOpenActivityList = { navController.navigate(Screen.ActivityList.route) },
                     onCreateActivity = { navController.navigate(Screen.ActivityForm.route) },
-                    onOpenHistory = { navController.navigate(Screen.History.route) }
+                    onOpenHistory = { navController.navigate(Screen.History.route) },
+                    onOpenProfile = { navController.navigate(Screen.Profile.route) }
                 )
             }
             composable(Screen.Summary.route) { SummaryScreen() }
