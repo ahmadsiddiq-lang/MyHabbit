@@ -574,6 +574,38 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Swipe-to-Delete (Delete Activity UX)
+
+- Status: COMPLETED
+- Date: 2026-11-17
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/ui/common/SwipeToDeleteContainer.kt (komponen bersama: geser kiri → tombol "Hapus" merah 88dp, clip rounded corner)
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityListScreen.kt (ActivityItem memakai SwipeToDeleteContainer; IconButton delete lama dihapus dari baris)
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityViewModel.kt (listError MutableStateFlow — error delete kini tampil di layar daftar, sebelumnya salah rute ke _formState)
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardScreen.kt (kartu Beranda swipe-able + dialog konfirmasi "Delete Activity?" + link "Lihat semua activity"/"Lihat history" di bagian bawah daftar)
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardViewModel.kt (inject DeleteHabitUseCase, deleteHabit() dengan error → manualError/snackbar)
+  - app/src/test/java/com/myhabbit/app/presentation/dashboard/DashboardViewModelTest.kt (ctor 4 param + test deleteHabit_removesItemFromDashboard)
+  - PRD.md (§16: ketentuan interaksi geser-kiri → Hapus → konfirmasi)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (121/121 — +1 test DashboardViewModel delete)
+
+- Acceptance Criteria:
+  - [x] Swipe kiri pada kartu (Beranda ATAU daftar Activity) menampilkan tombol "Hapus" merah di sisi kanan
+  - [x] Tap "Hapus" → dialog konfirmasi "Delete Activity? — This action cannot be undone" (PRD §34), default Cancel
+  - [x] Soft delete (deletedAt timestamp), history tetap tersimpan (PRD §16)
+  - [x] Tombol delete lama di baris daftar diganti interaksi swipe
+  - [x] Error gagal delete tampil di layar (snackbar Beranda / error list Activity)
+  - [x] Verifikasi di device bd60bb24: swipe → reveal → dialog → delete → Progress 0/2 → 0/1, sudut kartu tidak ada warna merah bocor
+
+- Known Issues:
+  - None
+
 ### Feature: Phase 13 — Final Polish
 
 - Status: COMPLETED
