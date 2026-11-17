@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.myhabbit.app.core.result.AppResult
 import com.myhabbit.app.domain.model.HabitCategory
 import com.myhabbit.app.domain.model.HabitStatus
+import com.myhabbit.app.domain.usecase.habit.DeleteHabitUseCase
 import com.myhabbit.app.domain.usecase.habit.GetActiveHabitsUseCase
 import com.myhabbit.app.domain.usecase.record.GetCurrentPeriodStatusesUseCase
 import com.myhabbit.app.domain.usecase.record.HabitWithStatus
@@ -37,7 +38,8 @@ data class DashboardUiState(
 class DashboardViewModel @Inject constructor(
     private val getActiveHabitsUseCase: GetActiveHabitsUseCase,
     private val getCurrentPeriodStatusesUseCase: GetCurrentPeriodStatusesUseCase,
-    private val updateHabitStatusUseCase: UpdateHabitStatusUseCase
+    private val updateHabitStatusUseCase: UpdateHabitStatusUseCase,
+    private val deleteHabitUseCase: DeleteHabitUseCase
 ) : ViewModel() {
 
     private val manualError = MutableStateFlow<String?>(null)
@@ -84,6 +86,16 @@ class DashboardViewModel @Inject constructor(
                     // Trigger re-emission karena Room flow hanya memantau tabel habits
                     refreshTrigger.value = refreshTrigger.value + 1
                 }
+            }
+        }
+    }
+
+    /** Hapus activity (soft delete, PRD.md §16) — dipanggil setelah konfirmasi. */
+    fun deleteHabit(habitId: String) {
+        viewModelScope.launch {
+            when (val result = deleteHabitUseCase(habitId)) {
+                is AppResult.Error -> manualError.value = result.message
+                is AppResult.Success -> manualError.value = null
             }
         }
     }

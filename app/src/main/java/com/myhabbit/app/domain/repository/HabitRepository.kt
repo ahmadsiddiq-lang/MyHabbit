@@ -16,4 +16,7 @@ interface HabitRepository {
     suspend fun updateHabit(habit: Habit)
 
     suspend fun softDeleteHabit(id: String, deletedAt: Long, updatedAt: Long)
+
+    /** Hard reset: hapus SEMUA habits, termasuk history-nya (PRD.md — Reset Data). */
+    suspend fun deleteAllHabits()
 }

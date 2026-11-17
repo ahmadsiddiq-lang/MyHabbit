@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -33,19 +32,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myhabbit.app.domain.model.Habit
-import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
+import com.myhabbit.app.ui.common.SwipeToDeleteContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,65 +135,12 @@ private fun ActivityItem(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    val revealWidthPx = with(LocalDensity.current) { 88.dp.toPx() }
-    val offsetX = remember { Animatable(0f) }
-
-    Box(modifier = Modifier.fillMaxWidth()) {
-        // Area merah "Hapus" — tersembunyi di belakang kartu, terbuka saat
-        // kartu digeser ke kiri (PRD.md: geser untuk menghapus + konfirmasi)
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(MaterialTheme.colorScheme.errorContainer),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            TextButton(
-                onClick = {
-                    scope.launch { offsetX.animateTo(0f) }
-                    onDelete()
-                },
-                modifier = Modifier.padding(end = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = "Delete ${habit.title}",
-                    modifier = Modifier.size(20.dp)
-                )
-                Text("Hapus")
-            }
-        }
-
-        Card(
-            modifier = Modifier
-                .offset { IntOffset(offsetX.value.roundToInt(), 0) }
-                .pointerInput(revealWidthPx) {
-                    detectHorizontalDragGestures(
-                        onDragEnd = {
-                            scope.launch {
-                                val target =
-                                    if (offsetX.value < -revealWidthPx / 2) -revealWidthPx else 0f
-                                offsetX.animateTo(target, tween(200))
-                            }
-                        },
-                        onDragCancel = {
-                            scope.launch {
-                                val target =
-                                    if (offsetX.value < -revealWidthPx / 2) -revealWidthPx else 0f
-                                offsetX.animateTo(target, tween(200))
-                            }
-                        }
-                    ) { change, dragAmount ->
-                        change.consume()
-                        scope.launch {
-                            offsetX.snapTo(
-                                (offsetX.value + dragAmount)
-                                    .coerceIn(-revealWidthPx, 0f)
-                            )
-                        }
-                    }
-                }
-        ) {
+    SwipeToDeleteContainer(
+        deleteLabel = "Hapus",
+        contentDescription = "Delete ${habit.title}",
+        onDelete = onDelete
+    ) {
+        Card(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

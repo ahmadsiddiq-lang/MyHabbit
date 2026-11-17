@@ -574,6 +574,43 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Reset Data (Reset Ringkasan + Hard Reset)
+
+- Status: COMPLETED
+- Date: 2026-11-17
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/usecase/habit/ResetRecordsUseCase.kt (hapus semua habit_records, activity tetap)
+  - app/src/main/java/com/myhabbit/app/domain/usecase/habit/ResetAllDataUseCase.kt (hapus habits + records; akun/pengaturan tetap)
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/domain/repository/HabitRepository.kt (+deleteAllHabits)
+  - app/src/main/java/com/myhabbit/app/domain/repository/HabitRecordRepository.kt (+deleteAllRecords)
+  - app/src/main/java/com/myhabbit/app/data/repository/HabitRepositoryImpl.kt
+  - app/src/main/java/com/myhabbit/app/data/repository/HabitRecordRepositoryImpl.kt
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileViewModel.kt (inject 2 use case, resetRecords()/resetAllData())
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileScreen.kt (ResetDataCard danger zone + dialog konfirmasi PRD §34a)
+  - app/src/test/java/com/myhabbit/app/presentation/profile/ProfileViewModelTest.kt (ctor 5 param + 3 test reset)
+  - app/src/test/java/com/myhabbit/app/domain/usecase/habit/HabitUseCaseTest.kt (+2 test use case, urutan records→habits diverifikasi InOrder)
+  - PRD.md (§34a Reset Data)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (126/126 — +5 test)
+
+- Acceptance Criteria:
+  - [x] Card "Reset Data" di Profil dengan 2 tombol merah: Reset Ringkasan & Hard Reset Semua Data
+  - [x] Reset Ringkasan hapus semua records → chart/history mulai dari nol, activity tetap
+  - [x] Hard Reset hapus habits + records (urutan records dulu) — aplikasi seperti baru
+  - [x] Akun Google, tema, notifikasi TIDAK ikut terhapus
+  - [x] Dialog konfirmasi wajib (default Cancel) dengan peringatan "This action cannot be undone"
+  - [x] Peringatan "Backup dulu disarankan" di card
+  - [x] Error reset tampil sebagai pesan di Profil
+
+- Known Issues:
+  - None
+
 ### Feature: Post-release — Swipe-to-Delete (Delete Activity UX)
 
 - Status: COMPLETED

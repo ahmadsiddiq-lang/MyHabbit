@@ -47,4 +47,8 @@ class HabitRecordRepositoryImpl @Inject constructor(
             existing.copy(status = status.name, updatedAt = updatedAt)
         )
     }
+
+    override suspend fun deleteAllRecords() {
+        habitRecordDao.deleteAllRecords()
+    }
 }

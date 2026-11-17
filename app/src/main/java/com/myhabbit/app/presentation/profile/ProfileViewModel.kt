@@ -7,9 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myhabbit.app.domain.model.AuthResult
 import com.myhabbit.app.domain.model.User
+import com.myhabbit.app.core.result.AppResult
 import com.myhabbit.app.domain.repository.AuthRepository
 import com.myhabbit.app.domain.repository.BackupRepository
 import com.myhabbit.app.domain.repository.SettingsRepository
+import com.myhabbit.app.domain.usecase.habit.ResetAllDataUseCase
+import com.myhabbit.app.domain.usecase.habit.ResetRecordsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,7 +46,9 @@ private data class ProfileCoreState(
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val backupRepository: BackupRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val resetRecordsUseCase: ResetRecordsUseCase,
+    private val resetAllDataUseCase: ResetAllDataUseCase
 ) : ViewModel() {
 
     private val isSigningIn = MutableStateFlow(false)
@@ -176,6 +181,28 @@ class ProfileViewModel @Inject constructor(
     fun onNotificationsChange(enabled: Boolean) {
         viewModelScope.launch {
             settingsRepository.setNotificationsEnabled(enabled)
+        }
+    }
+
+    /** Reset ringkasan: hapus semua records, activity tetap (PRD.md — Reset Data).
+     *  Dipanggil SETELAH konfirmasi user. */
+    fun resetRecords() {
+        viewModelScope.launch {
+            backupMessage.value = when (val result = resetRecordsUseCase()) {
+                is AppResult.Success -> "Ringkasan berhasil direset — history mulai dari nol"
+                is AppResult.Error -> result.message
+            }
+        }
+    }
+
+    /** Hard reset: hapus SEMUA activity + history. Akun & pengaturan tetap.
+     *  Dipanggil SETELAH konfirmasi user. */
+    fun resetAllData() {
+        viewModelScope.launch {
+            backupMessage.value = when (val result = resetAllDataUseCase()) {
+                is AppResult.Success -> "Semua data berhasil direset — aplikasi kembali seperti baru"
+                is AppResult.Error -> result.message
+            }
         }
     }
 }

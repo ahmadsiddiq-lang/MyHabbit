@@ -33,4 +33,8 @@ class HabitRepositoryImpl @Inject constructor(
     override suspend fun softDeleteHabit(id: String, deletedAt: Long, updatedAt: Long) {
         habitDao.softDeleteHabit(id, deletedAt, updatedAt)
     }
+
+    override suspend fun deleteAllHabits() {
+        habitDao.deleteAllHabits()
+    }
 }

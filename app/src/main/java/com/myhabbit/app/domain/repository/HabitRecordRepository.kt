@@ -22,4 +22,7 @@ interface HabitRecordRepository {
         status: HabitStatus,
         updatedAt: Long
     )
+
+    /** Hard reset: hapus SEMUA records (PRD.md — Reset Data). */
+    suspend fun deleteAllRecords()
 }

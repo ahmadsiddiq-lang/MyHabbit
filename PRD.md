@@ -568,13 +568,13 @@ Pengguna dapat menghapus activity.
 Cara menghapus (interaction):
 
 ```text
-Geser kartu activity ke KIRI pada daftar Activity
+Geser kartu activity ke KIRI (di Beranda atau daftar Activity)
 → tombol "Hapus" (merah) muncul di sisi kanan kartu
 → ketuk tombol tersebut
 → dialog konfirmasi muncul (lihat di bawah)
 ```
 
-Geser kembali ke kanan atau lepas di tengah jalan menutup kembali tombol Hapus.
+Beranda juga menyediakan link "Lihat semua activity" untuk membuka daftar lengkap.
 
 Sebelum delete:
 
@@ -1076,6 +1076,56 @@ Restoring data will replace current data.
 ```
 
 Restore harus memvalidasi data sebelum mengganti database aktif.
+
+---
+
+# 34a. Reset Data
+
+Layar Profil menyediakan card **Reset Data** (danger zone) dengan 2 aksi.
+
+## 34a.1 Reset Ringkasan
+
+Menghapus semua record status (habit_records) — history/chart/status mulai dari nol.
+
+Activity, akun, dan pengaturan TETAP utuh.
+
+Sebelum reset:
+
+```text
+Reset summary data?
+
+All status history will be deleted. Activities are kept.
+This action cannot be undone.
+
+[Cancel]
+[Reset]
+```
+
+## 34a.2 Hard Reset Semua Data
+
+Menghapus SEMUA data habit (habits + records) — aplikasi kembali seperti baru.
+
+Akun Google dan pengaturan (tema/notifikasi) tidak dihapus.
+
+Sebelum reset:
+
+```text
+Reset ALL data?
+
+All activities and history will be deleted.
+This action cannot be undone.
+
+[Cancel]
+[Delete everything]
+```
+
+## 34a.3 Aturan
+
+- Kedua reset wajib melewati dialog konfirmasi (default action: Cancel).
+- Reset menghapus data secara PERMANEN — tidak seperti delete activity (soft delete).
+- Setelah reset, chart/ringkasan otomatis sesuai karena dihitung dari habit_records.
+- Card menampilkan peringatan "Backup dulu disarankan".
+- Not "Never delete historical records" (§46) dianggap dikecualikan karena user memberi instruksi eksplisit via konfirmasi.
 
 ---
 

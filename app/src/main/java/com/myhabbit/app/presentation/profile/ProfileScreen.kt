@@ -183,6 +183,11 @@ fun ProfileScreen(
             onDismissMessage = { viewModel.clearBackupMessage() }
         )
 
+        ResetDataCard(
+            onResetRecords = { viewModel.resetRecords() },
+            onResetAll = { viewModel.resetAllData() }
+        )
+
         Text(
             text = "MyHabbit v1.0.0",
             style = MaterialTheme.typography.labelSmall,
@@ -378,12 +383,91 @@ private fun DriveBackupCard(
     }
 }
 
+/** Reset mana yang menunggu konfirmasi user (PRD.md §34 — confirm dulu). */
+private enum class PendingReset { RECORDS, ALL }
+
+@Composable
+private fun ResetDataCard(
+    onResetRecords: () -> Unit,
+    onResetAll: () -> Unit
+) {
+    var pending by remember { mutableStateOf<PendingReset?>(null) }
+
+    pending?.let { reset ->
+        AlertDialog(
+            onDismissRequest = { pending = null },
+            title = {
+                Text(
+                    if (reset == PendingReset.RECORDS) "Reset summary data?"
+                    else "Reset ALL data?"
+                )
+            },
+            text = {
+                Text(
+                    if (reset == PendingReset.RECORDS)
+                        "All status history will be deleted. Activities are kept. This action cannot be undone."
+                    else
+                        "All activities and history will be deleted. This action cannot be undone."
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (reset == PendingReset.RECORDS) onResetRecords() else onResetAll()
+                    pending = null
+                }) {
+                    Text(
+                        text = if (reset == PendingReset.RECORDS) "Reset" else "Delete everything",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pending = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Reset Data",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.error
+            )
+            Text(
+                text = "Reset ringkasan menghapus semua history/status — activity tetap ada. " +
+                    "Hard reset menghapus SEMUA activity dan history. Backup dulu disarankan.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            OutlinedButton(
+                onClick = { pending = PendingReset.RECORDS },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Reset Ringkasan", color = MaterialTheme.colorScheme.error)
+            }
+            OutlinedButton(
+                onClick = { pending = PendingReset.ALL },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Hard Reset Semua Data", color = MaterialTheme.colorScheme.error)
+            }
+        }
+    }
+}
+
 @Composable
 private fun ThemeCard(
     selected: String,
     onSelect: (String) -> Unit
-) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+) {    Card(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

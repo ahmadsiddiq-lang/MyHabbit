@@ -165,6 +165,30 @@ class HabitUseCaseTest {
     }
 
     @Test
+    fun resetRecords_deletesAllRecordsOnly() = runTest {
+        val useCase = ResetRecordsUseCase(recordRepository)
+
+        val result = useCase()
+
+        assertTrue(result is AppResult.Success)
+        verify(habitRecordDao).deleteAllRecords()
+        verify(habitDao, Mockito.never()).deleteAllHabits()
+    }
+
+    @Test
+    fun resetAllData_deletesRecordsThenHabits() = runTest {
+        val useCase = ResetAllDataUseCase(habitRepository, recordRepository)
+        val inOrder = Mockito.inOrder(habitRecordDao, habitDao)
+
+        val result = useCase()
+
+        assertTrue(result is AppResult.Success)
+        // Records dulu, lalu habits — tidak ada FK/relasi yatim
+        inOrder.verify(habitRecordDao).deleteAllRecords()
+        inOrder.verify(habitDao).deleteAllHabits()
+    }
+
+    @Test
     fun delete_missingHabit_returnsError() = runTest {
         val result = deleteHabitUseCase("habit_missing", currentTimeMillis = 1L)
 

@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,7 +30,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -43,6 +46,7 @@ import com.myhabbit.app.domain.model.HabitStatus
 import com.myhabbit.app.domain.usecase.record.HabitWithStatus
 import com.myhabbit.app.presentation.components.ProgressCard
 import com.myhabbit.app.presentation.components.StatusSelector
+import com.myhabbit.app.ui.common.SwipeToDeleteContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +58,31 @@ fun DashboardScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Konfirmasi hapus: "Restoring data" tidak berlaku di sini —
+    // dialog delete activity (PRD.md §16)
+    var habitToDelete by remember { mutableStateOf<HabitWithStatus?>(null) }
+
+    habitToDelete?.let { item ->
+        AlertDialog(
+            onDismissRequest = { habitToDelete = null },
+            title = { Text("Delete Activity?") },
+            text = { Text("This action cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteHabit(item.habit.id)
+                    habitToDelete = null
+                }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { habitToDelete = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     LaunchedEffect(state.error) {
         state.error?.let {
@@ -131,24 +160,37 @@ fun DashboardScreen(
                 habitSection(
                     label = "DAILY",
                     items = state.daily,
-                    onStatusChange = viewModel::onStatusChange
+                    onStatusChange = viewModel::onStatusChange,
+                    onDelete = { habitToDelete = it }
                 )
             }
             if (state.weekly.isNotEmpty()) {
                 habitSection(
                     label = "WEEKLY",
                     items = state.weekly,
-                    onStatusChange = viewModel::onStatusChange
+                    onStatusChange = viewModel::onStatusChange,
+                    onDelete = { habitToDelete = it }
                 )
             }
             if (state.monthly.isNotEmpty()) {
                 habitSection(
                     label = "MONTHLY",
                     items = state.monthly,
-                    onStatusChange = viewModel::onStatusChange
+                    onStatusChange = viewModel::onStatusChange,
+                    onDelete = { habitToDelete = it }
                 )
             }
 
+            item {
+                Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                    TextButton(onClick = onOpenActivityList) {
+                        Text("Lihat semua activity")
+                    }
+                    TextButton(onClick = onOpenHistory) {
+                        Text("Lihat history")
+                    }
+                }
+            }
             item { Spacer(modifier = Modifier.height(72.dp)) }
         }
     }
@@ -157,7 +199,8 @@ fun DashboardScreen(
 private fun LazyListScope.habitSection(
     label: String,
     items: List<HabitWithStatus>,
-    onStatusChange: (HabitWithStatus, HabitStatus) -> Unit
+    onStatusChange: (HabitWithStatus, HabitStatus) -> Unit,
+    onDelete: (HabitWithStatus) -> Unit
 ) {
     item {
         Text(
@@ -178,21 +221,27 @@ private fun LazyListScope.habitSection(
     }
     items(items.size) { index ->
         val item = items[index]
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(text = item.habit.title)
+        SwipeToDeleteContainer(
+            deleteLabel = "Hapus",
+            contentDescription = "Delete ${item.habit.title}",
+            onDelete = { onDelete(item) }
+        ) {
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(text = item.habit.title)
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                    StatusSelector(
+                        currentStatus = item.status,
+                        onStatusSelected = { onStatusChange(item, it) }
+                    )
                 }
-                Spacer(modifier = Modifier.width(4.dp))
-                StatusSelector(
-                    currentStatus = item.status,
-                    onStatusSelected = { onStatusChange(item, it) }
-                )
             }
         }
     }

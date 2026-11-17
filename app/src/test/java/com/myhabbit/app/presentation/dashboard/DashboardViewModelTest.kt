@@ -10,6 +10,7 @@ import com.myhabbit.app.domain.model.Habit
 import com.myhabbit.app.domain.model.HabitCategory
 import com.myhabbit.app.domain.model.HabitStatus
 import com.myhabbit.app.domain.service.PeriodCalculatorImpl
+import com.myhabbit.app.domain.usecase.habit.DeleteHabitUseCase
 import com.myhabbit.app.domain.usecase.habit.GetActiveHabitsUseCase
 import com.myhabbit.app.domain.usecase.record.GetCurrentPeriodStatusesUseCase
 import com.myhabbit.app.domain.usecase.record.UpdateHabitStatusUseCase
@@ -22,6 +23,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -56,7 +58,8 @@ class DashboardViewModelTest {
             getActiveHabitsUseCase = GetActiveHabitsUseCase(habitRepository),
             getCurrentPeriodStatusesUseCase =
                 GetCurrentPeriodStatusesUseCase(recordRepository, calculator),
-            updateHabitStatusUseCase = UpdateHabitStatusUseCase(recordRepository, calculator)
+            updateHabitStatusUseCase = UpdateHabitStatusUseCase(recordRepository, calculator),
+            deleteHabitUseCase = DeleteHabitUseCase(habitRepository)
         )
     }
 
@@ -139,5 +142,21 @@ class DashboardViewModelTest {
         val pending = daily.count { it.status == HabitStatus.PENDING }
 
         assertEquals(3, completed + pending)
+    }
+
+    @Test
+    fun deleteHabit_removesItemFromDashboard() = runTest(testDispatcher) {
+        seed("h1", HabitCategory.DAILY)
+        seed("h2", HabitCategory.DAILY)
+
+        val initial = viewModel.uiState.first { !it.isLoading && it.daily.size == 2 }
+        val target = initial.daily.first { it.habit.id == "h1" }
+
+        viewModel.deleteHabit(target.habit.id)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val updated = viewModel.uiState.first { it.daily.size == 1 }
+        assertEquals("h2", updated.daily.first().habit.id)
+        assertNull(updated.error)
     }
 }
