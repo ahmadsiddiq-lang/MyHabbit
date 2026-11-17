@@ -864,6 +864,14 @@ After completing each feature, add a record here.
 
 - Status: COMPLETED (kode + unit test; verifikasi end-to-end menunggu setup Google Cloud user)
 - Date: 2026-11-14
+- **RETEST END-TO-END (2026-11-17, device bd60bb24): PASSED** —
+  Profil → Backup ke Drive → consent Google ("Google belum memverifikasi aplikasi ini" →
+  Lanjutkan → scope Drive appDataFolder → Lanjutkan) → "Backup berhasil disimpan ke Google
+  Drive" + Last backup 17 Nov 2026 21:15; Restore dari Drive → dialog konfirmasi → Continue →
+  "Restore berhasil — data berhasil diganti dari Drive"; activity "Minum" tetap tampil di Beranda.
+  Known issue baru: setelah restore, label "Last backup" kembali "Belum pernah backup ke Drive"
+  (timestamp `lastBackupAt` ikut tertimpa isi backup) — minor, belum diperbaiki.
+- Date: 2026-11-14
 - Files Created:
   - app/src/main/java/com/myhabbit/app/data/drive/GoogleDriveManager.kt
   - app/src/test/java/com/myhabbit/app/data/repository/BackupRepositoryImplTest.kt
