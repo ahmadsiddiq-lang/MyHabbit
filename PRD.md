@@ -2503,7 +2503,7 @@ Ditampilkan ±1,6 detik saat aplikasi dibuka.
 
 ## 82.3 Ikon
 
-- Top bar Beranda: logo ✓ kecil + judul "MyHabbit" + ikon person (buka Profil)
+- Top bar Beranda: LATAR UNGU menyatu dengan status bar, logo ✓ putih, judul & ikon putih (semua layar memakai AppTopBar yang sama)
 - Status: lingkaran berisi ✓ hijau / ✕ merah / ○ kosong (simbol + warna)
 - Bottom nav: Beranda (rumah), Ringkasan (grafik), Profil (orang)
 

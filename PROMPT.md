@@ -583,12 +583,17 @@ After completing each feature, add a record here.
   - app/src/main/java/com/myhabbit/app/presentation/components/StatusPickerSheet.kt (bottom sheet "Pilih Status" — mockup #5)
   - app/src/main/java/com/myhabbit/app/presentation/splash/SplashScreen.kt (gradient ungu + logo + tagline + spinner — mockup #1)
   - app/src/main/java/com/myhabbit/app/ui/common/AppLogo.kt (logo kotak centang, dipakai top bar & splash)
+  - app/src/main/java/com/myhabbit/app/ui/common/AppTopBar.kt (top bar ungu + teks/ikon putih, dipakai SEMUA layar)
 
 - Files Modified:
   - app/src/main/java/com/myhabbit/app/ui/theme/Color.kt (palet brand ungu #5246C8 + aksen hijau/merah)
   - app/src/main/java/com/myhabbit/app/ui/theme/Theme.kt (dynamicColor DINONAKTIFKAN — brand konsisten mockup; scheme terang/gelap lengkap)
   - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardScreen.kt (top bar: logo ✓ + ikon person→Profil; kartu: 1 ikon status yang membuka popup; StatusSelector 3-tombol diganti)
   - app/src/main/java/com/myhabbit/app/presentation/navigation/AppNavigation.kt (splash overlay 1.6 detik + pass onOpenProfile)
+  - app/src/main/java/com/myhabbit/app/presentation/summary/SummaryScreen.kt (AppTopBar ungu)
+  - app/src/main/java/com/myhabbit/app/presentation/history/HistoryScreen.kt (AppTopBar ungu)
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityListScreen.kt (AppTopBar ungu)
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityFormScreen.kt (AppTopBar ungu)
   - PRD.md (§10 implementasi popup status + §82 UI Reference)
 
 - Files Deleted:
@@ -604,6 +609,7 @@ After completing each feature, add a record here.
   - [x] Warna ungu brand sesuai mockup, dark/light lengkap, dynamic color off
   - [x] Splash screen: gradient ungu + logo ✓ + "Track • Plan • Achieve" + spinner (mockup #1)
   - [x] Top bar Beranda: logo ✓ + judul + ikon person menuju Profil (mockup #3)
+  - [x] Top bar UNGU menyatu status bar dengan teks/ikon putih di SEMUA layar (AppTopBar) — verifikasi Beranda & Ringkasan di device
   - [x] Kartu activity: SATU ikon status lingkaran (bukan 3 tombol inline)
   - [x] Popup "Pilih Status" bottom sheet: Selesai/Tidak Dilakukan/Belum dinilai + Batal (mockup #5)
   - [x] Login tetap HANYA Google (email dari mockup diabaikan — keputusan user)
