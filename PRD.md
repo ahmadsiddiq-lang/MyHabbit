@@ -2516,3 +2516,14 @@ Ditampilkan ±1,6 detik saat aplikasi dibuka.
   default tab Harian, tab terpilih berbentuk pill ungu terisi, yang lain outline;
   tab tanpa activity menampilkan pesan "Belum ada activity di kategori ini"
 - Popup konfirmasi hapus/restore/reset memakai AlertDialog Material, tetap sesuai gaya aplikasi
+
+## 82.5 Ringkasan (mockup #6/#7)
+
+- Toggle segmented **Daftar | Chart** di bawah top bar
+- Pill kategori Harian/Mingguan/Bulanan (default Harian) — mirip tab Beranda
+- **Daftar**: judul "Ringkasan {Kategori} (tanggal)", baris statistik
+  ✓ Selesai / ✕ Gagal / ○ Total / ⊕ Rata-rata, lalu donut chart dengan
+  persentase di tengah + legend Selesai (hijau) / Gagal (merah)
+- **Chart**: "Tren 7 Hari Terakhir" line chart (garis + titik hijau,
+  grid 0/25/50/75/100%, label hari Sing/Minggu/Bulan) + kartu Rata-rata
+- Ringkasan dimuat ulang setiap kali layar dibuka (data tidak stale)

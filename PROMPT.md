@@ -574,6 +574,39 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Ringkasan Daftar + Chart sesuai mockup
+
+- Status: COMPLETED
+- Date: 2026-11-17
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/domain/usecase/summary/GetTrendUseCase.kt (tren completion 7 periode per kategori — hari/minggu/bulan, label Indonesia)
+  - app/src/main/java/com/myhabbit/app/domain/usecase/summary/TrendPoint.kt
+  - app/src/test/java/com/myhabbit/app/domain/usecase/summary/GetTrendUseCaseTest.kt (7 test: 7 titik, persen per hari, hari kosong = 0, label Indonesia, minggu/bulan)
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/summary/SummaryViewModel.kt (SummaryViewMode Daftar/Chart, default filter DAILY, trend di uiState, GetTrendUseCase injected)
+  - app/src/main/java/com/myhabbit/app/presentation/summary/SummaryScreen.kt (rewrite: segmented toggle Daftar/Chart, pill kategori ala Beranda, tab Daftar = baris statistik + donut dengan persen tengah + legend, tab Chart = line chart "Tren 7 Hari Terakhir" + kartu Rata-rata; refresh saat layar dibuka — fix data stale)
+  - app/src/main/java/com/myhabbit/app/presentation/components/Charts.kt (DonutChart: param centerLabel + legend Indonesia Selesai/Gagal; LineChart baru: garis + titik, grid 0-100%, label sumbu Compose Text)
+  - PRD.md (§82.5 Ringkasan Daftar + Chart)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (133/133 — 7 test baru)
+
+- Acceptance Criteria:
+  - [x] Toggle segmented Daftar | Chart (mockup #6) — terpilih = segmen putih
+  - [x] Pill kategori Harian/Mingguan/Bulanan, default Harian
+  - [x] Tab Daftar: judul "Ringkasan Harian (17 Nov 2026)", baris ✓ Selesai/✕ Gagal/○ Total/⊕ Rata-rata, donut dengan "100%" di tengah + legend Selesai/Gagal
+  - [x] Tab Chart: "Tren 7 Hari Terakhir" line chart hijau + grid 0-100% + label hari + kartu Rata-rata dengan ikon bar mini (mockup #7)
+  - [x] Tren menghitung 7 hari/7 minggu/7 bulan sesuai kategori; hari kosong = 0%
+  - [x] Ringkasan refresh setiap layar dibuka (fix: data tidak stale setelah ubah status di Beranda)
+  - [x] Verifikasi device: Daftar (Selesai 1, Total 1, Rata-rata 100%, donut penuh hijau) & Chart (garis naik ke 100% hari ini)
+
+- Known Issues:
+  - Tidak ada
+
 ### Feature: Post-release — Launcher Icon sesuai tema mockup
 
 - Status: COMPLETED
