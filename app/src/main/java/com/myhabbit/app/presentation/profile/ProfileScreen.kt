@@ -1,8 +1,11 @@
 package com.myhabbit.app.presentation.profile
 
 import android.Manifest
+import android.app.Activity
+import android.content.IntentSender
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +64,34 @@ fun ProfileScreen(
         uri?.let { viewModel.importFromUri(context, it) }
     }
 
+    // Konsen Drive via ActivityResult (polling authorize membatalkan sesi konsen)
+    var pendingDriveAction by remember { mutableStateOf<(() -> Unit)?>(null) }
+    val driveConsentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        val action = pendingDriveAction
+        pendingDriveAction = null
+        if (result.resultCode == Activity.RESULT_OK) {
+            action?.invoke()
+        } else {
+            viewModel.onDriveConsentCanceled()
+        }
+    }
+
+    /** Jalankan aksi Drive setelah memastikan konsen diberikan. */
+    fun withDriveConsent(action: () -> Unit) {
+        viewModel.requestDriveConsent(context) { sender ->
+            if (sender == null) {
+                action()
+            } else {
+                pendingDriveAction = action
+                driveConsentLauncher.launch(
+                    IntentSenderRequest.Builder(sender).build()
+                )
+            }
+        }
+    }
+
     restoreSource?.let { source ->
         AlertDialog(
             onDismissRequest = { restoreSource = null },
@@ -75,7 +106,9 @@ fun ProfileScreen(
                         RestoreSource.FILE -> filePicker.launch(
                             arrayOf("application/json", "text/plain")
                         )
-                        RestoreSource.DRIVE -> viewModel.restoreFromDrive(context)
+                        RestoreSource.DRIVE -> withDriveConsent {
+                            viewModel.restoreFromDrive(context)
+                        }
                     }
                 }) {
                     Text("Continue")
@@ -145,7 +178,7 @@ fun ProfileScreen(
         DriveBackupCard(
             lastBackupAt = state.lastBackupAt,
             message = state.backupMessage,
-            onBackupToDrive = { viewModel.backupToDrive(context) },
+            onBackupToDrive = { withDriveConsent { viewModel.backupToDrive(context) } },
             onRestoreFromDrive = { restoreSource = RestoreSource.DRIVE },
             onDismissMessage = { viewModel.clearBackupMessage() }
         )

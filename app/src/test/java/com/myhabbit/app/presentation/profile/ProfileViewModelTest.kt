@@ -1,6 +1,7 @@
 package com.myhabbit.app.presentation.profile
 
 import android.content.Context
+import android.content.IntentSender
 import android.net.Uri
 import com.myhabbit.app.domain.model.AuthResult
 import com.myhabbit.app.domain.model.User
@@ -195,5 +196,49 @@ class ProfileViewModelTest {
         val state = viewModel.uiState.first { it.backupMessage != null }
         assertTrue(state.backupMessage?.contains("gagal") == true)
         assertTrue(state.backupMessage?.contains("File tidak dapat dibaca") == true)
+    }
+
+    @Test
+    fun requestDriveConsent_alreadyAuthorized_callsActionDirectly() = runTest(testDispatcher) {
+        Mockito.`when`(backupRepository.prepareDriveConsent(activityContext)).thenReturn(null)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
+        viewModel.uiState.first { !it.isLoading }
+
+        var actionInvoked = false
+        var senderResult: Any? = "sentinel"
+        viewModel.requestDriveConsent(activityContext) { sender ->
+            senderResult = sender
+            if (sender == null) actionInvoked = true
+        }
+        testScheduler.advanceUntilIdle()
+
+        assertTrue(actionInvoked)
+        assertNull(senderResult)
+    }
+
+    @Test
+    fun requestDriveConsent_needed_returnsIntentSender() = runTest(testDispatcher) {
+        val intentSender = Mockito.mock(IntentSender::class.java)
+        Mockito.`when`(backupRepository.prepareDriveConsent(activityContext))
+            .thenReturn(intentSender)
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
+        viewModel.uiState.first { !it.isLoading }
+
+        var captured: IntentSender? = null
+        viewModel.requestDriveConsent(activityContext) { sender -> captured = sender }
+        testScheduler.advanceUntilIdle()
+
+        assertEquals(intentSender, captured)
+    }
+
+    @Test
+    fun onDriveConsentCanceled_setsMessage() = runTest(testDispatcher) {
+        val viewModel = ProfileViewModel(authRepository, backupRepository, settingsRepository)
+        viewModel.uiState.first { !it.isLoading }
+
+        viewModel.onDriveConsentCanceled()
+
+        val state = viewModel.uiState.first { it.backupMessage != null }
+        assertTrue(state.backupMessage?.contains("dibatalkan") == true)
     }
 }

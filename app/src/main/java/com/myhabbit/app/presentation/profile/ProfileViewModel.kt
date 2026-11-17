@@ -1,6 +1,7 @@
 package com.myhabbit.app.presentation.profile
 
 import android.content.Context
+import android.content.IntentSender
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -131,6 +132,21 @@ class ProfileViewModel @Inject constructor(
 
     fun clearBackupMessage() {
         backupMessage.value = null
+    }
+
+    /**
+     * Cek otorisasi Drive dulu. Bila user belum pernah konsen, kirim
+     * IntentSender ke [onResult] — UI meluncurkan dialog konsen via
+     * ActivityResult; bila null, aksi bisa langsung dijalankan.
+     */
+    fun requestDriveConsent(activityContext: Context, onResult: (IntentSender?) -> Unit) {
+        viewModelScope.launch {
+            onResult(backupRepository.prepareDriveConsent(activityContext))
+        }
+    }
+
+    fun onDriveConsentCanceled() {
+        backupMessage.value = "Otorisasi Drive dibatalkan"
     }
 
     fun backupToDrive(activityContext: Context) {

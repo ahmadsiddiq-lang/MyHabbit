@@ -1,6 +1,7 @@
 package com.myhabbit.app.domain.repository
 
 import android.content.Context
+import android.content.IntentSender
 import android.net.Uri
 import kotlinx.coroutines.flow.Flow
 
@@ -32,6 +33,13 @@ interface BackupRepository {
      * @return null jika sukses, atau pesan error.
      */
     suspend fun importFromUri(activityContext: Context, uri: Uri): String?
+
+    /**
+     * Cek otorisasi Drive SEBELUM backup/restore.
+     * @return IntentSender konsen yang harus diluncurkan UI bila user belum
+     *         memberi akses; null bila sudah authorized (langsung bisa jalan).
+     */
+    suspend fun prepareDriveConsent(activityContext: Context): IntentSender?
 
     /**
      * Backup ke Google Drive: export → validasi → upload →

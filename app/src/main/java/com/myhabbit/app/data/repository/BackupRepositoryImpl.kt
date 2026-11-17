@@ -1,6 +1,7 @@
 package com.myhabbit.app.data.repository
 
 import android.content.Context
+import android.content.IntentSender
 import android.net.Uri
 import com.myhabbit.app.data.backup.BackupExporter
 import com.myhabbit.app.data.backup.BackupImporter
@@ -66,6 +67,16 @@ class BackupRepositoryImpl @Inject constructor(
         } ?: return "File tidak dapat dibaca"
 
         return importFromJson(text)
+    }
+
+    override suspend fun prepareDriveConsent(activityContext: Context): IntentSender? {
+        return try {
+            driveManager.authorize(activityContext)
+            null // token langsung tersedia — sudah authorized
+        } catch (e: GoogleDriveManager.DriveConsentRequired) {
+            e.intentSender
+        }
+        // DriveError lain dibiarkan naik — ditangani saat backup/restore sungguhan
     }
 
     override suspend fun backupToDrive(activityContext: Context): String? {

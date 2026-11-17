@@ -11,5 +11,5 @@ package com.myhabbit.app.data.auth
  * Lihat catatan di PROMPT.md (Phase 10).
  */
 object AuthConfig {
-    const val WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com"
+    const val WEB_CLIENT_ID = "569827960080-blim8ls8a85v16980elc5ej1prsk5biv.apps.googleusercontent.com"
 }

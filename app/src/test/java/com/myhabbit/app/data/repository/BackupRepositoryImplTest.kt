@@ -2,6 +2,7 @@ package com.myhabbit.app.data.repository
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.IntentSender
 import android.net.Uri
 import com.myhabbit.app.data.backup.BackupData
 import com.myhabbit.app.data.backup.AppJson
@@ -200,5 +201,26 @@ class BackupRepositoryImplTest {
         val error = repository.importFromUri(activityContext, uri)
 
         assertEquals("Backup tidak valid", error)
+    }
+
+    @Test
+    fun prepareDriveConsent_alreadyAuthorized_returnsNull() = runTest {
+        whenever(driveManager.authorize(any())).thenReturn("token123")
+
+        val sender = repository.prepareDriveConsent(activityContext)
+
+        assertNull(sender)
+    }
+
+    @Test
+    fun prepareDriveConsent_needed_returnsIntentSender() = runTest {
+        val intentSender = Mockito.mock(IntentSender::class.java)
+        whenever(driveManager.authorize(any())).thenAnswer {
+            throw GoogleDriveManager.DriveConsentRequired(intentSender)
+        }
+
+        val sender = repository.prepareDriveConsent(activityContext)
+
+        assertEquals(intentSender, sender)
     }
 }

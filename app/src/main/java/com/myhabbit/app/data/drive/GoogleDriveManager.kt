@@ -1,6 +1,7 @@
 package com.myhabbit.app.data.drive
 
 import android.content.Context
+import android.content.IntentSender
 import com.google.android.gms.auth.api.identity.AuthorizationRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.Scope
@@ -35,6 +36,14 @@ class GoogleDriveManager @Inject constructor() {
 
     class DriveError(message: String, cause: Throwable? = null) : Exception(message, cause)
 
+    /**
+     * Dilempar saat scope Drive belum dikonsen user. Berisi [intentSender]
+     * yang HARUS diluncurkan UI via ActivityResult — setelah konsen diberikan,
+     * panggil [authorize] lagi dan token akan langsung tersedia.
+     */
+    class DriveConsentRequired(val intentSender: IntentSender) :
+        Exception("Drive consent diperlukan")
+
     companion object {
         private const val DRIVE_FILE_SCOPE = "https://www.googleapis.com/auth/drive.file"
         private const val BACKUP_FOLDER_NAME = "MyHabbit"
@@ -55,7 +64,11 @@ class GoogleDriveManager @Inject constructor() {
 
     /**
      * Minta otorisasi scope drive.file (ARCHITECTURE.md §14:
-     * terpisah dari sign-in). Return access token, atau lempar [DriveError].
+     * terpisah dari sign-in). Return access token, atau lempar:
+     * - [DriveConsentRequired] bila user belum pernah konsen — UI wajib
+     *   meluncurkan `intentSender` via ActivityResult (JANGAN dipolling;
+     *   memanggil authorize lagi saat dialog konsen terbuka membatalkan sesi)
+     * - [DriveError] untuk kegagalan lain
      */
     suspend fun authorize(activityContext: Context): String {
         return withContext(Dispatchers.IO) {
@@ -68,10 +81,15 @@ class GoogleDriveManager @Inject constructor() {
                         .authorize(request)
                 )
                 val token = result.accessToken
-                if (token.isNullOrBlank()) {
-                    throw DriveError("Otorisasi Drive gagal atau dibatalkan")
+                val pendingIntent = result.pendingIntent
+                when {
+                    !token.isNullOrBlank() -> token
+                    pendingIntent != null ->
+                        throw DriveConsentRequired(pendingIntent.intentSender)
+                    else -> throw DriveError("Otorisasi Drive gagal atau dibatalkan")
                 }
-                token
+            } catch (e: DriveConsentRequired) {
+                throw e
             } catch (e: DriveError) {
                 throw e
             } catch (e: Exception) {
