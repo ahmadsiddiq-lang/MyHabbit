@@ -23,13 +23,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.myhabbit.app.R
+import com.myhabbit.app.presentation.about.AboutScreen
 import com.myhabbit.app.presentation.activity.ActivityFormScreen
 import com.myhabbit.app.presentation.activity.ActivityListScreen
+import com.myhabbit.app.presentation.backup.BackupScreen
 import com.myhabbit.app.presentation.dashboard.DashboardScreen
 import com.myhabbit.app.presentation.history.HistoryScreen
 import com.myhabbit.app.presentation.login.LoginScreen
 import com.myhabbit.app.presentation.login.LoginViewModel
 import com.myhabbit.app.presentation.profile.ProfileScreen
+import com.myhabbit.app.presentation.settings.SettingsScreen
 import com.myhabbit.app.presentation.splash.SplashScreen
 import com.myhabbit.app.presentation.summary.SummaryScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -116,7 +119,23 @@ fun AppNavigation() {
                 )
             }
             composable(Screen.Summary.route) { SummaryScreen() }
-            composable(Screen.Profile.route) { ProfileScreen() }
+            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    onOpenSettings = { navController.navigate(Screen.Settings.route) },
+                    onOpenBackup = { navController.navigate(Screen.Backup.route) },
+                    onOpenRestore = { navController.navigate(Screen.Backup.route) },
+                    onOpenAbout = { navController.navigate(Screen.About.route) }
+                )
+            }
+            composable(Screen.Settings.route) {
+                SettingsScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Screen.Backup.route) {
+                BackupScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Screen.About.route) {
+                AboutScreen(onBack = { navController.popBackStack() })
+            }
             composable(Screen.History.route) {
                 HistoryScreen()
             }
