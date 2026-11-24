@@ -45,11 +45,18 @@ import com.myhabbit.app.ui.common.SwipeToDeleteContainer
 @Composable
 fun ActivityListScreen(
     onEditActivity: (String) -> Unit,
-    onCreateActivity: () -> Unit,
     viewModel: ActivityViewModel = hiltViewModel()
 ) {
     val state by viewModel.listState.collectAsStateWithLifecycle()
     var habitToDelete by remember { mutableStateOf<Habit?>(null) }
+    var showAddDialog by remember { mutableStateOf(false) }
+
+    if (showAddDialog) {
+        AddActivityDialog(
+            onDismiss = { showAddDialog = false },
+            onSaved = { showAddDialog = false }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -80,7 +87,7 @@ fun ActivityListScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text("Belum ada activity")
-                    TextButton(onClick = onCreateActivity) {
+                    TextButton(onClick = { showAddDialog = true }) {
                         Text("Tambah Activity")
                     }
                 }

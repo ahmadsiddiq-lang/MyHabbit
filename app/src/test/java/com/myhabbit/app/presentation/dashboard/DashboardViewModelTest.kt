@@ -159,4 +159,17 @@ class DashboardViewModelTest {
         assertEquals("h2", updated.daily.first().habit.id)
         assertNull(updated.error)
     }
+
+    @Test
+    fun onActivityAdded_showsNewActivityImmediately() = runTest(testDispatcher) {
+        val initial = viewModel.uiState.first { !it.isLoading }
+        assertTrue(initial.daily.isEmpty())
+
+        seed("h1", HabitCategory.DAILY)
+        viewModel.onActivityAdded()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val updated = viewModel.uiState.first { it.daily.isNotEmpty() }
+        assertEquals("h1", updated.daily.first().habit.id)
+    }
 }

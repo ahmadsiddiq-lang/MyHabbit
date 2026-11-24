@@ -104,6 +104,15 @@ class DashboardViewModel @Inject constructor(
         manualError.value = null
     }
 
+    /**
+     * Activity baru ditambahkan lewat popup di Beranda. Room flow pada
+     * GetActiveHabitsUseCase sudah memancarkan perubahan, tetapi refresh
+     * eksplisit memastikan daftar dan progress langsung sinkron.
+     */
+    fun onActivityAdded() {
+        refreshTrigger.value = refreshTrigger.value + 1
+    }
+
     private fun formatTodayLabel(date: LocalDate): String {
         val dayName = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("id", "ID"))
         val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("id", "ID"))

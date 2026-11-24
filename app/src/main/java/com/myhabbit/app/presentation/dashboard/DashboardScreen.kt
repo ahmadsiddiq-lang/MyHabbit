@@ -53,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myhabbit.app.domain.model.HabitCategory
 import com.myhabbit.app.domain.model.HabitStatus
 import com.myhabbit.app.domain.usecase.record.HabitWithStatus
+import com.myhabbit.app.presentation.activity.AddActivityDialog
 import com.myhabbit.app.presentation.components.ProgressCard
 import com.myhabbit.app.presentation.components.StatusIcon
 import com.myhabbit.app.presentation.components.StatusPickerSheet
@@ -63,7 +64,6 @@ import com.myhabbit.app.ui.common.SwipeToDeleteContainer
 @Composable
 fun DashboardScreen(
     onOpenActivityList: () -> Unit,
-    onCreateActivity: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenProfile: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
@@ -78,8 +78,21 @@ fun DashboardScreen(
     // Popup "Pilih Status" (mockup UI.png #5) — kartu cukup 1 klik
     var statusTarget by remember { mutableStateOf<HabitWithStatus?>(null) }
 
+    // Popup "Tambah Kegiatan" (mockup UI.png #4) — tanpa pindah halaman
+    var showAddDialog by remember { mutableStateOf(false) }
+
     // Tab filter aktif (mockup UI.png #3) — default Harian
     var selectedTab by remember { mutableStateOf(HabitCategory.DAILY) }
+
+    if (showAddDialog) {
+        AddActivityDialog(
+            onDismiss = { showAddDialog = false },
+            onSaved = {
+                showAddDialog = false
+                viewModel.onActivityAdded()
+            }
+        )
+    }
 
     statusTarget?.let { item ->
         StatusPickerSheet(
@@ -144,7 +157,7 @@ fun DashboardScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onCreateActivity,
+                onClick = { showAddDialog = true },
                 modifier = Modifier.semantics { contentDescription = "Tambah activity" }
             ) {
                 Icon(Icons.Filled.Add, contentDescription = null)
@@ -174,7 +187,7 @@ fun DashboardScreen(
             ) {
                 Text("Belum ada activity")
                 Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = onCreateActivity) {
+                Button(onClick = { showAddDialog = true }) {
                     Text("Tambah Activity")
                 }
                 TextButton(onClick = onOpenActivityList) {

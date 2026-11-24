@@ -2,23 +2,15 @@ package com.myhabbit.app.presentation.activity
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,11 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.myhabbit.app.domain.model.HabitCategory
 import com.myhabbit.app.ui.common.AppTopBar
 import com.myhabbit.app.ui.common.BackButton
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Layar Edit Activity. Penambahan activity memakai popup
+ * ([AddActivityDialog]) agar tidak berpindah halaman.
+ */
 @Composable
 fun ActivityFormScreen(
     habitId: String?,
@@ -45,7 +39,6 @@ fun ActivityFormScreen(
     viewModel: ActivityViewModel = hiltViewModel()
 ) {
     val state by viewModel.formState.collectAsStateWithLifecycle()
-    var categoryExpanded by remember { mutableStateOf(false) }
     var loaded by remember { mutableStateOf(false) }
 
     LaunchedEffect(habitId) {
@@ -102,133 +95,22 @@ fun ActivityFormScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
-                    FormField(label = "Judul *", error = state.titleError) {
-                        OutlinedTextField(
-                            value = state.title,
-                            onValueChange = viewModel::onTitleChange,
-                            placeholder = { Text("Mis. Meditasi pagi") },
-                            isError = state.titleError != null,
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    ActivityFormFields(
+                        state = state,
+                        onTitleChange = viewModel::onTitleChange,
+                        onCategoryChange = viewModel::onCategoryChange,
+                        onDescriptionChange = viewModel::onDescriptionChange
+                    )
 
-                    FormField(label = "Kategori", error = state.categoryError) {
-                        val selectedCategory = state.category
-                        ExposedDropdownMenuBox(
-                            expanded = categoryExpanded,
-                            onExpandedChange = { categoryExpanded = it },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            OutlinedTextField(
-                                value = selectedCategory?.let { categoryLabel(it) } ?: "",
-                                onValueChange = {},
-                                readOnly = true,
-                                placeholder = { Text("Pilih kategori") },
-                                isError = state.categoryError != null,
-                                trailingIcon = {
-                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded)
-                                },
-                                modifier = Modifier
-                                    .menuAnchor()
-                                    .fillMaxWidth()
-                            )
-                            ExposedDropdownMenu(
-                                expanded = categoryExpanded,
-                                onDismissRequest = { categoryExpanded = false }
-                            ) {
-                                HabitCategory.entries.forEach { category ->
-                                    DropdownMenuItem(
-                                        text = { Text(categoryLabel(category)) },
-                                        onClick = {
-                                            viewModel.onCategoryChange(category)
-                                            categoryExpanded = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    FormField(label = "Deskripsi (opsional)", error = state.descriptionError) {
-                        OutlinedTextField(
-                            value = state.description,
-                            onValueChange = viewModel::onDescriptionChange,
-                            placeholder = { Text("Mis. Lakukan meditasi selama 10 menit") },
-                            isError = state.descriptionError != null,
-                            minLines = 3,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    state.error?.let {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        OutlinedButton(
-                            onClick = onCancel,
-                            enabled = !state.isSaving,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text("Batal")
-                        }
-                        Button(
-                            onClick = { viewModel.saveHabit(habitId) },
-                            enabled = !state.isSaving,
-                            modifier = Modifier.weight(1.6f)
-                        ) {
-                            if (state.isSaving) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.padding(vertical = 2.dp),
-                                    strokeWidth = 2.dp
-                                )
-                            } else {
-                                Text("Simpan")
-                            }
-                        }
-                    }
+                    ActivityFormButtons(
+                        isSaving = state.isSaving,
+                        onCancel = onCancel,
+                        onSave = { viewModel.saveHabit(habitId) }
+                    )
                 }
             }
         }
     }
-}
-
-/** Label di atas field + pesan error (mockup UI.png #4). */
-@Composable
-private fun FormField(
-    label: String,
-    error: String?,
-    content: @Composable () -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        content()
-        error?.let {
-            Text(
-                text = it,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-    }
-}
-
-private fun categoryLabel(category: HabitCategory): String = when (category) {
-    HabitCategory.DAILY -> "Harian"
-    HabitCategory.WEEKLY -> "Mingguan"
-    HabitCategory.MONTHLY -> "Bulanan"
 }

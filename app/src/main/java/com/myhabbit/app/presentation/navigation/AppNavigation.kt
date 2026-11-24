@@ -113,7 +113,6 @@ fun AppNavigation() {
             composable(Screen.Dashboard.route) {
                 DashboardScreen(
                     onOpenActivityList = { navController.navigate(Screen.ActivityList.route) },
-                    onCreateActivity = { navController.navigate(Screen.ActivityForm.route) },
                     onOpenHistory = { navController.navigate(Screen.History.route) },
                     onOpenProfile = { navController.navigate(Screen.Profile.route) }
                 )
@@ -144,16 +143,7 @@ fun AppNavigation() {
                 ActivityListScreen(
                     onEditActivity = { habitId ->
                         navController.navigate(Screen.ActivityEdit.createRoute(habitId))
-                    },
-                    onCreateActivity = { navController.navigate(Screen.ActivityForm.route) }
-                )
-            }
-
-            composable(Screen.ActivityForm.route) {
-                ActivityFormScreen(
-                    habitId = null,
-                    onSaved = { navController.popBackStack() },
-                    onCancel = { navController.popBackStack() }
+                    }
                 )
             }
 

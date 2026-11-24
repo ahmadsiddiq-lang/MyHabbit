@@ -8,7 +8,6 @@ sealed class Screen(val route: String) {
     data object Backup : Screen("backup")
     data object About : Screen("about")
     data object ActivityList : Screen("activity_list")
-    data object ActivityForm : Screen("activity_form")
     data object History : Screen("history")
 
     data object ActivityEdit : Screen("activity_edit/{habitId}") {
