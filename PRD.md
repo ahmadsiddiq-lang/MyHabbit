@@ -2536,6 +2536,9 @@ Ditampilkan ±1,6 detik saat aplikasi dibuka.
   (**Judul ***, **Kategori**, **Deskripsi (opsional)**), placeholder contoh, kategori
   Harian/Mingguan/Bulanan, tombol **Batal** + **Simpan**, dan panah kembali di top bar.
   Pesan validasi tampil di bawah field masing-masing.
+  **Tambah Activity memakai popup** ("Tambah Kegiatan") di atas Beranda — FAB `+` dan
+  tombol pada empty state membuka dialog, bukan halaman baru. Edit Activity tetap
+  memakai layar penuh karena perlu memuat data terlebih dahulu.
 
 ## 82.5 Ringkasan (mockup #6/#7)
 

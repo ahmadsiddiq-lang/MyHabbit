@@ -574,6 +574,56 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Tambah Activity menjadi popup
+
+- Status: COMPLETED
+- Date: 2026-11-24
+- Latar: menekan "+"/"Tambah Activity" membuka halaman form baru. Mockup UI.png #4
+  menampilkan "Tambah Kegiatan" sebagai kartu popup di atas Beranda. Permintaan user:
+  tambah activity cukup popup agar tidak berpindah halaman.
+
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityFormFields.kt
+    (field Judul/Kategori/Deskripsi + tombol Batal/Simpan, dipakai bersama dialog & layar edit)
+  - app/src/main/java/com/myhabbit/app/presentation/activity/AddActivityDialog.kt
+    (Dialog + Surface rounded, form langsung di atas layar Beranda)
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardScreen.kt
+    (state `showAddDialog`; FAB & tombol "Tambah Activity" membuka dialog; param
+    `onCreateActivity` dihapus; callback `onSaved` memanggil `viewModel.onActivityAdded()`)
+  - app/src/main/java/com/myhabbit/app/presentation/dashboard/DashboardViewModel.kt
+    (+`onActivityAdded()` memicu refresh daftar & progress)
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityListScreen.kt
+    (tambah activity memakai dialog; param `onCreateActivity` dihapus)
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityFormScreen.kt
+    (disederhanakan memakai komponen bersama; kini hanya untuk EDIT)
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/Screen.kt (hapus route `activity_form`)
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/AppNavigation.kt
+    (hapus composable form; param onCreateActivity dihapus)
+  - app/src/test/java/com/myhabbit/app/presentation/dashboard/DashboardViewModelTest.kt
+    (+1 test `onActivityAdded_showsNewActivityImmediately`)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (144/144 — 20 kelas)
+
+- Acceptance Criteria:
+  - [x] FAB "+" di Beranda membuka popup "Tambah Kegiatan", bukan halaman baru
+  - [x] Tombol "Tambah Activity" pada empty state Beranda juga membuka popup
+  - [x] Popup berisi form mockup #4: Judul *, Kategori, Deskripsi (opsional), Batal, Simpan
+  - [x] Beranda tetap terlihat di belakang popup (tidak berpindah layar)
+  - [x] Simpan menutup popup dan activity langsung muncul di tab kategori terkait
+  - [x] Batal / tap di luar menutup popup; tombol terkunci saat menyimpan
+  - [x] Daftar Activity ("Lihat semua activity") juga memakai popup yang sama
+  - [x] Edit activity TETAP memakai layar penuh (perlu memuat data dulu)
+  - [x] Verifikasi device: popup tampil di atas Beranda dengan keyboard, isian berfungsi
+
+- Known Issues:
+  - Edit masih layar penuh — belum dijadikan popup (di luar permintaan).
+
 ### Feature: Post-release — Form Tambah/Edit Activity sesuai mockup #4
 
 - Status: COMPLETED
