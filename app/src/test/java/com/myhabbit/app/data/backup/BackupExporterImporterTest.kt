@@ -163,4 +163,55 @@ class BackupExporterImporterTest {
         assertTrue(data.records.isEmpty())
         assertNull(data.user)
     }
+
+    @Test
+    fun import_settingsWithoutLastBackupAt_keepsLocalNewerTimestamp() = runTest {
+        // Simulasi retest end-to-end: device sudah backup (lastBackupAt terisi),
+        // lalu restore file backup yang dibuat sebelum backup pertama (null).
+        val json = serializer.serialize(
+            BackupData(
+                schemaVersion = 1,
+                app = AppJson("MyHabbit", "1.0.0"),
+                exportedAt = 1L,
+                settings = SettingsJson(theme = "dark", notificationsEnabled = true, lastBackupAt = null)
+            )
+        )
+        database.settingsDao().insertSettings(
+            SettingsEntity(1, "system", false, 1731800000000L)
+        )
+
+        val result = importer.import(json)
+
+        assertEquals(BackupValidation.Valid, result)
+        val settings = database.settingsDao().getSettings()
+        assertEquals("dark", settings?.theme)
+        assertEquals(true, settings?.notificationsEnabled)
+        // Timestamp lokal TIDAK hilang
+        assertEquals(1731800000000L, settings?.lastBackupAt)
+    }
+
+    @Test
+    fun import_settingsWithNewerLastBackupAt_usesBackupTimestamp() = runTest {
+        // Backup lebih baru dari device → pakai timestamp backup
+        val json = serializer.serialize(
+            BackupData(
+                schemaVersion = 1,
+                app = AppJson("MyHabbit", "1.0.0"),
+                exportedAt = 1L,
+                settings = SettingsJson(
+                    theme = "dark",
+                    notificationsEnabled = true,
+                    lastBackupAt = 9900000000000L
+                )
+            )
+        )
+        database.settingsDao().insertSettings(
+            SettingsEntity(1, "system", false, 1731800000000L)
+        )
+
+        val result = importer.import(json)
+
+        assertEquals(BackupValidation.Valid, result)
+        assertEquals(9900000000000L, database.settingsDao().getSettings()?.lastBackupAt)
+    }
 }

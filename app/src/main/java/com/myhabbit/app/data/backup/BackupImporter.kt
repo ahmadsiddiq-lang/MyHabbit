@@ -76,12 +76,22 @@ class BackupImporter @Inject constructor(
             }
 
             data.settings?.let { settings ->
+                // lastBackupAt jangan mundur saat restore: gabungkan dengan
+                // nilai lokal — ambil yang terbaru dari keduanya. Backup
+                // berisi lastBackupAt = null bila diambil sebelum backup
+                // pertama selesai, sehingga tanpa merge label "Last backup"
+                // hilang setelah restore (bug ditemukan saat retest end-to-end).
+                val existing = database.settingsDao().getSettings()
+                val mergedLastBackupAt = maxOf(
+                    existing?.lastBackupAt ?: 0L,
+                    settings.lastBackupAt ?: 0L
+                ).takeIf { it > 0L }
                 database.settingsDao().insertSettings(
                     SettingsEntity(
                         id = 1,
                         theme = settings.theme,
                         notificationsEnabled = settings.notificationsEnabled,
-                        lastBackupAt = settings.lastBackupAt
+                        lastBackupAt = mergedLastBackupAt
                     )
                 )
             }
