@@ -574,6 +574,68 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Perbaikan `lastBackupAt` setelah restore
+
+- Status: COMPLETED
+- Date: 2026-11-24
+- Files Created:
+  - Tidak ada
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/data/backup/BackupImporter.kt (`lastBackupAt` hasil restore digabung
+    dengan nilai lokal memakai `maxOf(local, backup)` — timestamp tidak mundur/hilang bila file backup
+    dibuat sebelum backup pertama)
+  - app/src/test/java/com/myhabbit/app/data/backup/BackupExporterImporterTest.kt (+2 test merge timestamp)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (139/139 — 18 kelas; `BackupExporterImporterTest` 8/8 termasuk 2 test baru)
+
+- Acceptance Criteria:
+  - [x] Restore file backup dengan `lastBackupAt = null` → label "Last backup" lokal TIDAK hilang
+  - [x] Restore file backup dengan `lastBackupAt` lebih baru → memakai timestamp dari backup
+  - [x] `theme` dan `notificationsEnabled` tetap diambil dari isi backup
+  - [x] Tidak ada perubahan skema DB / skema JSON (tanpa migrasi)
+
+- Known Issues:
+  - None
+
+- Notes:
+  - Merupakan penutupan known issue retest Drive 2026-11-17 (PROMPT.md Phase 12)
+  - Diverifikasi ulang dengan `--rerun-tasks` agar test benar-benar dieksekusi, bukan UP-TO-DATE
+
+### Feature: Post-release — Perbaikan Gradle Wrapper rusak
+
+- Status: COMPLETED
+- Date: 2026-11-24
+- Files Created:
+  - gradle/wrapper/gradle-wrapper.jar (sebelumnya tidak ada — wajib untuk wrapper)
+  - gradlew.bat (sebelumnya tidak ada)
+
+- Files Modified:
+  - gradlew (sebelumnya berisi `exec "$APP_HOME/gradlew" "$@"` → rekursi tanpa henti; diganti skrip wrapper resmi Gradle 8.7)
+  - gradle/wrapper/gradle-wrapper.properties (ditambah `networkTimeout`, `validateDistributionUrl` dari wrapper resmi; `distributionUrl` tetap gradle-8.7-bin)
+
+- Build:
+  - SUCCESS (:app:assembleDebug lewat `./gradlew`)
+
+- Tests:
+  - PASSED (139/139 lewat `./gradlew testDebugUnitTest`)
+
+- Acceptance Criteria:
+  - [x] `./gradlew --version` menampilkan Gradle 8.7 (sebelumnya hang tanpa output)
+  - [x] `./gradlew testDebugUnitTest` dan `./gradlew assembleDebug` berjalan normal
+  - [x] `gradle-wrapper.jar` tidak diabaikan `.gitignore` (aturan `!gradle/wrapper/gradle-wrapper.jar` sudah ada)
+
+- Known Issues:
+  - `gradle-wrapper.jar` dan `gradlew.bat` belum di-commit — menunggu persetujuan pengguna
+
+- Notes:
+  - Wrapper digenerasi ulang via task `wrapper` resmi Gradle 8.7, bukan ditulis manual
+  - Build environment: JDK 17 (`~/jdk17/jdk-17.0.12+7`), Android SDK `~/android-sdk`
+
 ### Feature: Post-release — Layar awal Login Google (mockup #2)
 
 - Status: COMPLETED
@@ -870,7 +932,8 @@ After completing each feature, add a record here.
   Drive" + Last backup 17 Nov 2026 21:15; Restore dari Drive → dialog konfirmasi → Continue →
   "Restore berhasil — data berhasil diganti dari Drive"; activity "Minum" tetap tampil di Beranda.
   Known issue baru: setelah restore, label "Last backup" kembali "Belum pernah backup ke Drive"
-  (timestamp `lastBackupAt` ikut tertimpa isi backup) — minor, belum diperbaiki.
+  (timestamp `lastBackupAt` ikut tertimpa isi backup) — **(RESOLVED 2026-11-24)** lihat
+  "Post-release — Perbaikan lastBackupAt setelah restore".
 - Date: 2026-11-14
 - Files Created:
   - app/src/main/java/com/myhabbit/app/data/drive/GoogleDriveManager.kt
