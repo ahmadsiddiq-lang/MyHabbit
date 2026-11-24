@@ -574,6 +574,105 @@ After completing each feature, add a record here.
 
 ## Feature Completion Record
 
+### Feature: Post-release — Form Tambah/Edit Activity sesuai mockup #4
+
+- Status: COMPLETED
+- Date: 2026-11-24
+- Latar: form sebelumnya polos — field tanpa label di atas, teks Inggris
+  ("Title"/"Category"/"Description (opsional)", "Cancel"/"Save"), tanpa panah
+  kembali, dan tanpa kartu pembungkus.
+
+- Files Created:
+  - Tidak ada
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/activity/ActivityFormScreen.kt
+    (form dibungkus Card; label di ATAS tiap field: "Judul *", "Kategori",
+    "Deskripsi (opsional)"; placeholder contoh; tombol "Batal"/"Simpan" dengan
+    Simpan lebih lebar; back arrow di top bar; kategori diterjemahkan ke
+    Harian/Mingguan/Bulanan agar konsisten dengan Beranda & Ringkasan)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (143/143 — 3× rerun `--rerun-tasks` untuk memastikan stabil)
+
+- Acceptance Criteria (mockup #4):
+  - [x] Form berada dalam kartu putih/rounded di atas latar
+  - [x] Label di atas field: Judul *, Kategori, Deskripsi (opsional)
+  - [x] Placeholder contoh ("Mis. Meditasi pagi", "Mis. Lakukan meditasi selama 10 menit")
+  - [x] Tombol "Batal" (outline) + "Simpan" (terisi ungu) sejajar
+  - [x] Panah kembali di top bar
+  - [x] Kategori dropdown: Harian / Mingguan / Bulanan
+  - [x] Validasi tetap: border merah + pesan "Title tidak boleh kosong",
+        "Kategori wajib dipilih" di bawah field
+  - [x] Alur simpan end-to-end di device: isi judul + kategori + simpan →
+        kembali ke Beranda dan activity muncul di tab kategori terkait
+
+- Known Issues:
+  - `DashboardViewModelTest.emptyState_allSectionsEmpty` sempat gagal sekali dengan
+    `Dispatchers.Main is used concurrently with setting it` (race `resetMain()`
+    Robolectric). Terbukti flaky: 3 rerun berikutnya lulus. Bukan regresi.
+
+### Feature: Post-release — Profil sesuai mockup #8 + Pengaturan & Backup terpisah
+
+- Status: COMPLETED
+- Date: 2026-11-24
+- Latar: halaman Profil sebelumnya menumpuk semua kartu (akun, about, tema,
+  notifikasi, backup file, backup Drive, reset). Mockup UI.png #8 menunjukkan
+  Profil sebagai daftar menu, dengan Pengaturan (#9) dan Backup & Restore (#10)
+  sebagai layar tersendiri.
+
+- Files Created:
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileScreen.kt (ditulis ulang)
+  - app/src/main/java/com/myhabbit/app/presentation/settings/SettingsScreen.kt
+  - app/src/main/java/com/myhabbit/app/presentation/settings/SettingsViewModel.kt
+  - app/src/main/java/com/myhabbit/app/presentation/backup/BackupScreen.kt
+  - app/src/main/java/com/myhabbit/app/presentation/backup/BackupViewModel.kt
+  - app/src/main/java/com/myhabbit/app/presentation/about/AboutScreen.kt
+  - app/src/main/java/com/myhabbit/app/ui/common/MenuRow.kt (baris menu ikon + chevron)
+  - app/src/main/java/com/myhabbit/app/ui/common/BackButton.kt
+  - app/src/main/res/drawable/ic_settings.xml, ic_palette.xml, ic_info.xml,
+    ic_logout.xml, ic_notifications.xml, ic_reset.xml, ic_arrow_back.xml,
+    ic_cloud_upload.xml, ic_cloud_download.xml
+  - app/src/test/java/com/myhabbit/app/presentation/backup/BackupViewModelTest.kt (10 test)
+  - app/src/test/java/com/myhabbit/app/presentation/settings/SettingsViewModelTest.kt (7 test)
+
+- Files Modified:
+  - app/src/main/java/com/myhabbit/app/presentation/profile/ProfileViewModel.kt (disederhanakan:
+    hanya observeCurrentUser + signOut; backup/pengaturan/reset pindah ke ViewModel masing-masing)
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/Screen.kt (+Settings, +Backup, +About)
+  - app/src/main/java/com/myhabbit/app/presentation/navigation/AppNavigation.kt (route + back arrow)
+  - app/src/test/java/com/myhabbit/app/presentation/profile/ProfileViewModelTest.kt (disesuaikan, 3 test)
+
+- Build:
+  - SUCCESS (:app:assembleDebug)
+
+- Tests:
+  - PASSED (143/143 — 20 kelas)
+
+- Acceptance Criteria:
+  - [x] Profil: top bar ungu "Profil", avatar bulat besar, nama, email (mockup #8)
+  - [x] Daftar menu ber-ikon dengan chevron: Pengaturan, Backup ke Google Drive,
+        Pulihkan dari Google Drive, Tentang Aplikasi
+  - [x] Baris "Keluar" terpisah di bawah, warna error (mockup #8)
+  - [x] Pengaturan (#9): Notifikasi (switch), Tema Aplikasi (dialog pilihan), Reset Data
+        (Reset Ringkasan + Hard Reset, keduanya lewat dialog konfirmasi PRD §34a)
+  - [x] Backup & Restore (#10): kartu Backup ke Google Drive + Restore Sekarang,
+        status "Last backup", plus Export/Import file JSON lokal yang sudah ada
+  - [x] Tentang Aplikasi: nama, versi, deskripsi, catatan data & privasi
+  - [x] Back arrow di Pengaturan / Backup / Tentang
+  - [x] Perilaku lama dipertahankan: konsen Drive via ActivityResult, konfirmasi
+        replace-data sebelum restore, reset tanpa hapus akun & pengaturan
+  - [x] Build + seluruh unit test lulus
+
+- Known Issues:
+  - Baris "Satuan Waktu" dan "Bahasa" pada mockup #9 TIDAK diimplementasi — keduanya
+    tidak ada di PRD maupun ARCHITECTURE (tidak mengarang fitur). Perlu keputusan
+    produk bila diinginkan.
+  - Verifikasi visual di device belum dilakukan pada sesi ini (APK terbangun).
+
 ### Feature: Post-release — Perbaikan `lastBackupAt` setelah restore
 
 - Status: COMPLETED

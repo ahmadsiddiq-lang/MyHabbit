@@ -2521,6 +2521,21 @@ Ditampilkan ±1,6 detik saat aplikasi dibuka.
   default tab Harian, tab terpilih berbentuk pill ungu terisi, yang lain outline;
   tab tanpa activity menampilkan pesan "Belum ada activity di kategori ini"
 - Popup konfirmasi hapus/restore/reset memakai AlertDialog Material, tetap sesuai gaya aplikasi
+- Profil (mockup #8): top bar "Profil" + panah kembali, avatar bulat besar berisi inisial,
+  nama + email, lalu kartu daftar menu ber-ikon dengan chevron — **Pengaturan**,
+  **Backup ke Google Drive**, **Pulihkan dari Google Drive**, **Tentang Aplikasi** — dan
+  baris **Keluar** terpisah berwarna merah. Semua fungsi tidak lagi ditumpuk di Profil.
+- Pengaturan (mockup #9): switch **Notifikasi**, **Tema Aplikasi** (dialog Terang/Gelap/
+  System Default), dan **Reset Data** (Reset Ringkasan + Hard Reset, keduanya lewat dialog
+  konfirmasi). Baris "Satuan Waktu" dan "Bahasa" pada mockup TIDAK diimplementasi karena
+  tidak ada di PRD.
+- Backup & Restore (mockup #10): kartu **Backup ke Google Drive** dan **Pulihkan dari
+  Google Drive** (tombol Backup/Restore Sekarang, status "Last backup"), ditambah
+  Export/Import file JSON lokal.
+- Form Tambah/Edit Activity (mockup #4): form dibungkus kartu, label di ATAS field
+  (**Judul ***, **Kategori**, **Deskripsi (opsional)**), placeholder contoh, kategori
+  Harian/Mingguan/Bulanan, tombol **Batal** + **Simpan**, dan panah kembali di top bar.
+  Pesan validasi tampil di bawah field masing-masing.
 
 ## 82.5 Ringkasan (mockup #6/#7)
 
